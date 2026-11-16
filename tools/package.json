@@ -1,0 +1,11 @@
+{
+  "name": "kasir-toko-mahyu-tools",
+  "private": true,
+  "description": "Alat bantu pengembangan: prettier untuk merapikan kode",
+  "scripts": {
+    "format": "prettier --config .prettierrc.json --write \"../src/js/*.js\" ../src/css/app.css \"../src/pesan/*.js\" \"../src/pesan/*.css\" \"../src/shared/*.js\""
+  },
+  "devDependencies": {
+    "prettier": "3.3.3"
+  }
+}
