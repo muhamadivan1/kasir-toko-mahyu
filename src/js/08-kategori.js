@@ -1,0 +1,304 @@
+/* ============ KATEGORI BARANG ============
+ * Kategori standar toko kelontong: sedikit, jelas, dan sesuai cara orang mencari barang di warung.
+ * Kategori ditebak dari NAMA barang (lebih bisa dipercaya daripada kategori bawaan Fastmart yang sering
+ * keliru, misal tabung gas masuk "KOREK"). Kalau nama tidak dikenali, baru kategori lama dipetakan.
+ * Dipakai oleh: pembaruan data sekali jalan, form produk, tambah cepat dari barcode, import Fastmart,
+ * filter Produk, dan urutan kategori di halaman pesan pelanggan.
+ */
+const KATEGORI_STANDAR = [
+  ['SEMBAKO', '🍚', 'beras, gula, minyak goreng, telur, tepung, garam, gas'],
+  ['MIE, SOUN & BUBUR', '🍜', 'mie instan, mie telor, soun, bubur instan'],
+  ['BUMBU DAPUR', '🧂', 'kecap, saus, sambal, kaldu, penyedap, merica, santan, vanili'],
+  ['SNACK & BISKUIT', '🍪', 'snack, biskuit, wafer, permen, es krim, sosis, kerupuk'],
+  ['KOPI', '☕', 'kopi sachet, kopi bubuk, kopi susu'],
+  ['MINUMAN', '🥤', 'teh, minuman sachet, air mineral, botol, gelas, kaleng'],
+  ['SUSU', '🥛', 'susu kental manis, susu bubuk, UHT, yakult'],
+  ['ROKOK', '🚬', 'rokok dan tembakau'],
+  ['OBAT', '💊', 'obat batuk, flu, demam, maag, salep, plester, kompres'],
+  ['VITAMIN & MADU', '🍯', 'vitamin, madu, suplemen'],
+  ['MINYAK ANGIN & BALSEM', '🌿', 'kayu putih, minyak angin, balsem, krim hangat, koyo'],
+  ['BAYI & ANAK', '👶', 'popok, bedak bayi, minyak telon, sabun & sampo bayi'],
+  ['SABUN MANDI & PASTA GIGI', '🧼', 'sabun batang, sabun cair, pasta gigi, obat kumur'],
+  ['SAMPO & PERAWATAN RAMBUT', '💇', 'sampo, kondisioner, cat rambut, minyak rambut, sisir'],
+  ['KECANTIKAN & WAJAH', '💄', 'sabun muka, krim wajah, bedak, make up, kapas'],
+  ['LOTION, PARFUM & DEODORAN', '🌸', 'hand body, cologne, minyak wangi, deodoran'],
+  ['PEMBALUT & KEWANITAAN', '🌷', 'pembalut, sabun kewanitaan'],
+  ['DETERJEN & PEMBERSIH', '🧺', 'deterjen, pewangi pakaian, sabun cuci piring, pembersih lantai'],
+  ['ANTI NYAMUK & SERANGGA', '🦟', 'obat nyamuk, lotion anti nyamuk, kapur serangga'],
+  ['KEBUTUHAN RUMAH', '🏠', 'korek, baterai, lampu, plastik, tisu, benang, jarum, lem'],
+  ['ALAT TULIS', '✏️', 'pulpen, pensil, buku, amplop, lem kertas'],
+  ['MATERIAL BANGUNAN', '🧱', 'semen, paralon, lem pipa'],
+  ['LAIN-LAIN', '📦', 'barang yang belum masuk kategori mana pun']
+].map(([nama, ikon, isi]) => ({ nama, ikon, isi }));
+const KAT_LAIN = 'LAIN-LAIN';
+const _katIdx = new Map(KATEGORI_STANDAR.map((k, i) => [k.nama, i]));
+const katUp = s =>
+  String(s || '')
+    .toUpperCase()
+    .replace(/\s+/g, ' ')
+    .trim();
+function isKategoriStandar(k) {
+  return _katIdx.has(k);
+}
+function ikonKategori(k) {
+  const i = _katIdx.get(k);
+  return i === undefined ? '🏷️' : KATEGORI_STANDAR[i].ikon;
+}
+/** Urutan kategori seperti rak warung (kategori standar dulu, kategori buatan sendiri sesudahnya) */
+function urutKategori(a, b) {
+  const ia = _katIdx.has(a) ? _katIdx.get(a) : 900,
+    ib = _katIdx.has(b) ? _katIdx.get(b) : 900;
+  return ia - ib || String(a).localeCompare(String(b));
+}
+/** Semua pilihan kategori untuk form: kategori standar + kategori lain yang sedang dipakai */
+function daftarKategori() {
+  return [...new Set([...KATEGORI_STANDAR.map(k => k.nama), ...categories()])].sort(urutKategori);
+}
+/** <option> kategori untuk <select>, dengan ikon */
+function opsiKategori(pilih) {
+  const L = daftarKategori();
+  if (pilih && !L.includes(pilih)) L.unshift(pilih);
+  return L.map(
+    c => `<option value="${esc(c)}" ${c === pilih ? 'selected' : ''}>${ikonKategori(c)} ${esc(c)}</option>`
+  ).join('');
+}
+
+/* ---- Tebakan dari nama barang. Urutan penting: yang lebih khusus di atas. ---- */
+const ATURAN_KATEGORI = [
+  // merek yang namanya bisa mengecoh aturan lain (es krim "CHOCO CHARM", minuman "TONIC WATER")
+  [
+    'SNACK & BISKUIT',
+    /\b(WALLS|WALL S|WALS|WALL SELECTION|CONE?LL?O|CONERLLO|CANELLO|CORNETTO|CORNET|PADDLE POP|VIENNETA|NINJA|RAINBOW PEAK)\b/
+  ],
+  ['MINUMAN', /\b(F & N|HEMAVITO)\b/],
+  ['DETERJEN & PEMBERSIH', /\bFABRIC SOFT\w*/],
+  [
+    'ANTI NYAMUK & SERANGGA',
+    /\b(NYAMUK|AUTAN|SOFFELL?|LAVENDA|VAPE|BAYGON|HIT|MORTEIN|DOFF|NOMOS|KAPUR (AJAIB|SERANGGA|BARUS)|KAMPER|RACUN (TIKUS|SERANGGA)|LEM TIKUS|KECOA|SERANGGA)\b/
+  ],
+  [
+    'OBAT',
+    /\b(OBAT(?! (NYAMUK|KUMUR|RAMBUT))|OBH|OB HERBAL|KOMIX|PROMAG|MYLANTA|POLYSILANE|ENTROSTOP|DIAPET|NORIT|BODREX|PARAMEX|PANADOL|PARACETAMOL|PARASETAMOL|SANMOL|TEMPRA|PROPAPHENIN|OSKADON|DECOLGEN|MIXAGRIP|NEOZEP|PROCOLD|INZA|ULTRAFLU|SANAFLU|IBUPROFEN|PROMAGH|SILADEX|VICKS FORMULA|HUFAGRI[PF]+|BRONCHITIN|BRONSITYN|LASERIN|WOODS|KONIDIN|TOLAK ANGIN|ANTANGIN|BETADINE|ALKOHOL|RIVANOL|REVANOL|HANSAPLAST|OKEPLAST|PLESTER|SALEP|KALPANAX|ULTRASILINE|CALADINE|HEROCYN|INSTO|ROHTO|KOOL FEVER|BYE BYE FEVER|FEVER|REMASIL|PIL KB|ANDALAN|GASTRUCID|FLU|BATUK|PILEK|DEMAM|MAAG|DIARE|PUSING|SAKIT KEPALA|MENCRET|SARIAWAN|PANU|KUDIS|GATAL|TETES MATA|KONDOM)\b/
+  ],
+  ['OBAT', /\b(BODREXIN|FLUCYL|CONTREXYN|CONTREX|DIACYL|RHEUMACYL|HEADACHE|KURAP)\b/],
+  [
+    'BAYI & ANAK',
+    /\b(BABY|BAYI|TELON|POPOK|PAMPERS|PEMPERS|DIAPERS?|MAMYPOKO|MERRIES|SWEETY|FITTI|ZWITSAL|KODOMO|CUSSONS?|BREAST PUMP|DOT|BOTOL SUSU|PIGEON|MASTER KIDS|ESKULIN KIDS|KIDS (MIST|SPRAY|COLOGNE|SHAMPO+|SABUN))\b/
+  ],
+  ['KEBUTUHAN RUMAH', /\b(TISU|TISSU|TISSUE)\b/],
+  ['KEBUTUHAN RUMAH', /\bLION STAR\b/],
+  [
+    'ROKOK',
+    /\b(ROKOK|SIGARET|KRETEK|TEMBAKAU|BAKO|CERUTU|KLOBOT|DJARUM|GUDANG GARAM|GARPIT|GGM|GG (MILD|SURYA|MERAH)|SAMPOERNA|DJI SAM SOE|MAGNUM (BINTANG|FILTER|KRETEK|MAX|MILD|BLACK|\d+)|MARLBORO|DUNHILL|ESSE|CAMEL|LA (BOLD|ICE|LIGHTS?|MENTHOL|MERAH)|L A ICE|CLAS MILD|ASPRO|JAZY|JANAKA|WISMILAK|LUCKY STRIKE|NESTLITE|TWIZZ|3VO|HARMONI KRETEK|SARASA|A MILD|U MILD|PRO MILD|STAR MILD|BENTOEL|DIPLOMAT|APACHE|GAJAH BARU|MINAK DJINGGO|SUKUN|NOJORONO|CHESTERFIELD)\b/
+  ],
+  ['ROKOK', /\b(DJI SAMSOE|MARBORO\w*|PANAMAS)\b/],
+  [
+    'PEMBALUT & KEWANITAAN',
+    /\b(PEMBALUT|CHARM|LAURIER|SOFTEX|HERS|KOTEX|PANTY ?LINER|RESIK ?V|MANJAKANI|SABUN SIRIH|NATUR ?CARE)\b/
+  ],
+  [
+    'MINYAK ANGIN & BALSEM',
+    /\b(MINYAK (ANGIN|KAYU PUTIH|URUT|GOSOK|TAWON|HERBA|OTOT|BOKER|SEREH|GANDAPURA)|KAYU PUTIH|BALSE?A?M|BALM|GELIGA|COUNTERPAIN|FRESH ?CARE|SAFE ?CARE|SO FRESH|HOT ?IN|HOTINCREAM|VAPORUB|KOYO|SALONPAS|GPU|CAP LANG|ROLL ?ON AROMA|TIGER BALM)\b/
+  ],
+  ['MINYAK ANGIN & BALSEM', /\b(BALS|BAPALA)\b/],
+  [
+    'DETERJEN & PEMBERSIH',
+    /\b(DETERJEN|DETERGEN|SOFTERGENT|RINSO|DAIA|SO ?KLIN|SOKLIN|ATTACK|BOOM|WINGS|EKONOMI|MOLTO|DOWNY|KISPRAY|SOFTENER|PEWANGI|PELEMBUT|MAMA LEMON|SUNLIGHT|CUCI PIRING|PEMBERSIH (LANTAI|KACA|TOILET|KAMAR MANDI|PORSELEN)|SUPER ?PELL|WIPOL|PORSTEX|HARPIC|VIXAL|BAYCLIN|PROCLIN|STELLA|PENGHARUM RUANGAN|SABUN COLEK|SABUN CREAM|SOSOFT|SAYANG HIJAB|SPONS CUCI|SABUT|KAIN LAP|LANTAI)\b/
+  ],
+  [
+    'DETERJEN & PEMBERSIH',
+    /\b(DOMESTOS|OMO|SURF|VIM|SUNCLIN|PEMUTIH|KARBOL|TRIKA|SUPERBUSA|PENC(UCI)? PIRING)\b/
+  ],
+  ['KECANTIKAN & WAJAH', /\bCLEAN (&|AND) CLEAR\b/],
+  ['SABUN MANDI & PASTA GIGI', /\bLIFEB[OU]+Y CLEAR SKIN\b/],
+  [
+    'SAMPO & PERAWATAN RAMBUT',
+    /\b(SHAMPO+|SAMPO|SHP|CONDITIONER|KONDISIONER|HAIR|RAMBUT|MIRANDA|TANCO|POMADE|MINYAK RAMBUT|SISIR|HI TOP|TOP LADY|BLEACHING|CLEAR|SUNSILK|PANTENE|REJOICE|ZINC|H&S|HEAD (&|AND) SHOULDERS|EMERON|NATUR SHAMPO)\b/
+  ],
+  ['SAMPO & PERAWATAN RAMBUT', /\b(REVLON FLEX|SHAM)\b/],
+  [
+    'KECANTIKAN & WAJAH',
+    /\b(COMP POWD|COMPACT POWDER|FACE POWD|FACE TONIC|FAC FOAM|TWC|ASTRINGENT|MILK CLEANS\w*)\b/
+  ],
+  ['SABUN MANDI & PASTA GIGI', /\bMARINA\b.*\b(SOAP|BODY WASH|BW)\b/],
+  [
+    'LOTION, PARFUM & DEODORAN',
+    /\b(LOTION|BODY ?(MIST|SPRAY|LOTION|SERUM|OIL|BUTTER)|HAND (&|AND)? ?BODY|H&B|HAN ?BODI|HANDBODY|MARINA|CITRA|VASELINE|NIVEA|PARFUM|PERFUME|COLOGNE|COL|B&B|CASABLANCA|ESKULIN|GATSBY|AXE|DEODORANT?|DEO|REXONA|POSH|MINYAK (WANGI|ZAITUN)|ZAITUN|AIR MATA DUYUNG|STRETCH ?MARK)\b/
+  ],
+  ['LOTION, PARFUM & DEODORAN', /\bHBL\b/],
+  [
+    'KECANTIKAN & WAJAH',
+    /\b(FACIAL|FACE|WAJAH|MUKA|SERUM|TONER|TONIC|ASTRINGEN\w*|CLEANSER|MAKE ?UP|FOUNDATION|BEDAK|POWDER|LIPSTI(K|CK)|LIP (CREAM|BALM|TINT)|MASCARA|EYE ?(PENCIL|LINER|SHADOW)|PENSIL ALIS|PONDS?|GARNIER|WARDAH|VIVA|SARIAYU|KELLY|MARCKS|MICHIDO|OVALE|POISE|BIORE|GLOW (&|AND) LOVELY|FAIR (&|AND) LOVELY|PELEMBAB|VANISHING|DAY CREAM|NIGHT CREAM|KAPAS|SPONS BEDAK|IMPLORA|PIXY|EMINA|HANASUI|SCARLETT|AIR MAWAR|MASKER|SLEEPING MASK|GLISERIN|SEGER (SNOW|& CO)|PEARL CREAM|CREAM PEMUTIH)\b/
+  ],
+  ['KECANTIKAN & WAJAH', /\bHAZELINE?\b/],
+  [
+    'SABUN MANDI & PASTA GIGI',
+    /\b(SABUN|SOAP|BODY ?WASH|SHOWER|LIFEB[OU]+Y|LUX|GIV|NUVO|SHINZUI|DETTOL|HARMONY|PASTA GIGI|ODOL|PEPSODENT|CIPTADENT|CLOSE ?UP|SENSODYNE|SIKAT GIGI|LISTERINE|OBAT KUMUR|KOREK KUPING|COTTON ?BUDS?)\b/
+  ],
+  [
+    'SABUN MANDI & PASTA GIGI',
+    /\b(LIF BW|LIF HWL|LIFEBOY\w*|HANDSOAP|HAND ?WASH|HAND SOAP|CLAUDIA|LUXCREAMY|TOTAL ?CARE|PRITHO)\b/
+  ],
+  [
+    'ALAT TULIS',
+    /\b(PULPEN|PULPHEN|BOLPOIN|BALPOIN|PENSIL|PENGHAPUS|RAUTAN|PENGGARIS|BUKU|AMPLOP|KERTAS|HVS|SPIDOL|STABILO|TIP-?EX|TIPE ?X|LEM STIK|GLUE STICK|CRAYON|KRAYON|MAP|STAPLER|STEPLES|STAPLES|MATERAI|METERAI)\b/
+  ],
+  [
+    'KEBUTUHAN RUMAH',
+    /\b(KOREK|MANCIS|BATRE|BATERAI|BATU (BATRE|REMOT|BATERAI|JAM)|ALKALIN|LAMPU|BOHLAM|SENTER|STEKER|STOP ?KONTAK|KABEL|LAKBAN|SOLASI|ISOLASI|SELOTIP|BENANG|JARUM|PENITI|TALI|RAFIA|RAPIA|PLASTIK|KRESEK|KANTONG|LEM|LILIN|SENDOK|GARPU|PIRING|GELAS PLASTIK|SEDOTAN|TISU|TISSU|TISSUE|TESSA|PASEO|KIWI SEMIR|SEMIR SEPATU|SAPU|KESET|HANGER|JEPITAN|EMBER|GAYUNG)\b/
+  ],
+  ['MINUMAN', /\b(NIPIS MADU|ANGET SARI|SUSU JAHE|WEDANG)\b/],
+  [
+    'MINUMAN',
+    /\b(F & N|ENA ?E? ?O|ENERBEE|HEMAFITON|HI O2|LANG-LANG SARI|SANZHA|LASEGAR|KAKI TIGA|KAKI 3|SARI ?WANGI|SARI MURNIO?)\b/
+  ],
+  [
+    'VITAMIN & MADU',
+    /\b(MADU|MADURASA|VITAMIN|VIT ?[ABCDE]|IPI|SANGOBION|ENERVON|REDOXON|CDR|STIMUNO|IMBOOST|SUPLEMEN|CURCUMA|SCOTTS?|HABBATUSSAUDA|SARI KURMA|PROPOLIS)\b/
+  ],
+  ['VITAMIN & MADU', /\b(VIDORAN|HORMOVITON|HEMAVITON (CAP|ACTION|STAMINA|SKIN|ECHINACEA))\b/],
+  ['SNACK & BISKUIT', /\b(CANDY|PERMEN|KOPIKO)\b/],
+  ['SNACK & BISKUIT', /\b(ES ?KRIM|ESKRIM|ICE CREAM|AICE|AIM|MASTERBIS|BISK|BISC|WYBERT|PASTILES)\b/],
+  [
+    'KOPI',
+    /\b(KOPI|COFFEE|COFFEEMIX|KAPAL API|GOOD ?DAY|LUWAK|TORABIKA|TORA ?CAFE|INDOCAFE|FRESCO|NESCAFE|CAPPUCC?INO|CAPUC+INO|MOCACC?INO|MOCACINNO|WHITE COFFEE|EXCELSO|LIONG|AYAM MERAK)\b/
+  ],
+  [
+    'SUSU',
+    /\b(SUSU|MILK|DANCOW|ANLENE|MILO|ULTRA ?MILK|FRISIAN|BENDERA|BEAR BRAND|INDOMILK|CIMORY|CLEVO|MILKU|YAKULT|YOGURT|YOGHURT|KENTAL MANIS|ENSURE|HILO|BEBELAC|SGM|LACTOGEN|BENECOL)\b/
+  ],
+  [
+    'MIE, SOUN & BUBUR',
+    /\b(MIE|INDOMIE|SARIMI|SUPERMI|POP ?MIE|BIHUN|SOUN|SOHUN|KWETIAU|BUBUR|LEMONILO|SPAGHETTI|MAKARONI|MACARONI)\b/
+  ],
+  [
+    'BUMBU DAPUR',
+    /\b(KECAP|SAOS|SAUS|SAMBAL|SAMBEL|KALDU|PENYEDAP|MASAKO|ROYCO|SASA|AJINOMOTO|MICIN|VETSIN|PECIN|MSG|TERASI|TARASI|MERICA|LADA|LADAKU|KETUMBAR|BUMBU|RACIK|DESAKU|BAWANG|KUNYIT|SANTAN|KARA|VANILI|VANILLI|PANILI|NUTRIJELL|AGAR|JELLY|SWALLOW|PENGEMBANG|SODA KUE|BAKING|MENTEGA|MARGARIN|BLUE ?BAND|PEWARNA MAKANAN|CUKA|ASAM JAWA|SAORI|SAJIKU|KOBE)\b/
+  ],
+  [
+    'SEMBAKO',
+    /\b(BERAS|BEAS|KETAN|GULA|MINYAK GORENG|MINYAK (CURAH|\d)|BIMOLI|SANIA|FILMA|SUNCO|FORTUNE|TROPICAL|SOVIA|TELUR|TELOR|TEPUNG|TERIGU|TARIGU|SEGITIGA BIRU|CAKRA KEMBAR|ACI|TAPIOKA|SAGU|MAIZENA|GARAM|GAS|ELPIJI|LPG|KACANG (HIJAU|IJO|TANAH|MERAH|KEDELAI|MENTAH)|KEDELAI|SUUK|JAGUNG PIPIL)\b/
+  ],
+  [
+    'MINUMAN',
+    /\b(TEH|TEA|MINUMAN|DRINK|AIR MINERAL|AIR MINUM|AQUA|LE ?MINERALE|MINOLA|CLEO|ADES|PRISTINE|POCARI|ISOPLUS|MIZONE|HYDRO ?COCO|SPRITE|COCA ?COLA|FANTA|PEPSI|BIG COLA|FLORIDINA|FRUTANG|YOU ?C ?1000|ALE ?ALE|FRESTEA|SOSRO|TEBS|LARUTAN|CAP BADAK|CAP KAKI TIGA|ADEM ?SARI|POWER ?F|EXTRA ?JOSS|KUKU ?BIMA|KRATINGDAENG|HEMAVITON|MARIMAS|POP ?ICE|JASJUS|NUTRISARI|ENERGEN|SEGAR DINGIN|BONTEA|LEVON|SIRUP|MARJAN|ES BATU)\b/
+  ],
+  [
+    'SNACK & BISKUIT',
+    /\b(SNACK|CIKI|KERIPIK|KRIPIK|KERUPUK|KRUPUK|CHIPS?|CHITATO|LAYS|TARO|QTELA|POTATO|PILUS|GARUDA|DUA KELINCI|SUKRO|BISKUIT|BISCUIT|BISKUAT|BISKITOP|CRACKERS?|MALKIST|ROMA|KHONG GUAN|MARIE|REGAL|OREO|TANGO|WAFER|WAFFLE|NEXTAR|NASTAR|DILAN|GERY|GARY|SALUUT|BETTER|KALPA|NISSIN|ARDEN|SUPERSTAR|BENG ?BENG|CHOKI|CHOCOLATOS|SILVERQUEEN|COKLAT|COKELAT|CHOCOLATE|DELFI|YUPI|RELAXA|MENTOS|HEXOS|SUGUS|LOLIPOP|ES ?KRIM|ESKRIM|ICE CREAM|WALLS|AICE|CAMPINA|SOSIS|SO NICE|KANZLER|SIIP|NABATI|RICHEESE|SELAI|ROTI|BOLU|KUE|DONAT|BULAO|GORIO|KLIK|TINI ?WINI|BASRENG|SEBLAK|CHUBA|JAJANAN)\b/
+  ]
+];
+/** Nama yang tidak bisa ditebak dengan yakin: dimasukkan ke LAIN-LAIN dulu supaya dicek sendiri */
+const KATEGORI_KHUSUS = {
+  'KAP KOPI': KAT_LAIN,
+  'MARIOPPA COKLAT': KAT_LAIN,
+  'MARIOPPA MATCHA': KAT_LAIN,
+  'POWERFIT COKLAT 250 G': KAT_LAIN
+};
+/** Kategori dari nama barang saja ('' kalau tidak dikenali) */
+function kategoriDariNama(nama) {
+  const n = katUp(nama);
+  if (!n) return '';
+  if (KATEGORI_KHUSUS[n]) return KATEGORI_KHUSUS[n];
+  for (const [kat, rx] of ATURAN_KATEGORI) if (rx.test(n)) return kat;
+  return '';
+}
+
+/* ---- Kategori lama (Fastmart & kategori buatan sendiri) ke kategori standar ---- */
+const KAT_LAMA = {
+  LAINNYA: KAT_LAIN,
+  '-': KAT_LAIN,
+  AKSESORIS: 'KEBUTUHAN RUMAH',
+  KOREK: 'KEBUTUHAN RUMAH',
+  LAKBAN: 'KEBUTUHAN RUMAH',
+  LAMPU: 'KEBUTUHAN RUMAH',
+  TISSUE: 'KEBUTUHAN RUMAH',
+  'TEMPAT LILIN': 'KEBUTUHAN RUMAH',
+  'KAIN LAP': 'DETERJEN & PEMBERSIH',
+  'PEST CONTROL': 'ANTI NYAMUK & SERANGGA',
+  KACANG: 'SNACK & BISKUIT',
+  KERUPUK: 'SNACK & BISKUIT',
+  SELAI: 'SNACK & BISKUIT',
+  SOSIS: 'SNACK & BISKUIT',
+  PERMEN: 'SNACK & BISKUIT',
+  SEREAL: 'MINUMAN',
+  LARUTAN: 'MINUMAN',
+  'GARAM & MERICA': 'BUMBU DAPUR',
+  'PARFUM & COLOGNE ANAK-ANAK': 'BAYI & ANAK',
+  'OBAT BAYI': 'OBAT',
+  'EYEBROW KIT': 'KECANTIKAN & WAJAH',
+  'FOOT SPRAY': 'LOTION, PARFUM & DEODORAN',
+  'HAND CREAM': 'LOTION, PARFUM & DEODORAN',
+  'STRETCHMARK CREAM': 'LOTION, PARFUM & DEODORAN',
+  'HAIR FOAM': 'SAMPO & PERAWATAN RAMBUT',
+  'SUPLEMEN VITAMIN RAMBUT': 'SAMPO & PERAWATAN RAMBUT',
+  'OBAT KUMUR DAN SPRAY MULUT': 'SABUN MANDI & PASTA GIGI',
+  'SABUN KEWANITAAN': 'PEMBALUT & KEWANITAAN',
+  MADU: 'VITAMIN & MADU',
+  TELUR: 'SEMBAKO',
+  GULA: 'SEMBAKO',
+  'MINYAK GORENG': 'SEMBAKO'
+};
+/** Pola untuk kategori lama yang tidak ada di daftar di atas (misal kategori Fastmart lain) */
+const POLA_KAT_LAMA = [
+  ['ROKOK', /ROKOK|SIGARET|TEMBAKAU|CERUTU/],
+  ['MATERIAL BANGUNAN', /MATERIAL|BANGUNAN|SEMEN|BESI|KERAMIK|PERKAKAS|PIPA/],
+  ['BAYI & ANAK', /BAYI|ANAK|POPOK/],
+  ['OBAT', /^OBAT|P3K|KESEHATAN|ANTISEPTIK|PLESTER/],
+  ['VITAMIN & MADU', /VITAMIN|SUPLEMEN|MADU|JAMU/],
+  ['MINYAK ANGIN & BALSEM', /BALSA?E?M|MINYAK (ANGIN|PIJAT|URUT|KAYU)|KOYO/],
+  ['PEMBALUT & KEWANITAAN', /PEMBALUT|KEWANITAAN/],
+  [
+    'DETERJEN & PEMBERSIH',
+    /DETERJEN|PEMBERSIH (LANTAI|TOILET|RUMAH|KACA)|PEWANGI|PELEMBUT|CUCI PIRING|PENGHARUM/
+  ],
+  ['SAMPO & PERAWATAN RAMBUT', /RAMBUT|SHAMPO|SAMPO/],
+  ['KECANTIKAN & WAJAH', /WAJAH|MAKE ?UP|KOSMETIK|BIBIR|KUKU|ALIS|MATA$/],
+  ['LOTION, PARFUM & DEODORAN', /LOTION|DEODORAN|PARFUM|COLOGNE|BODY|BADAN/],
+  ['SABUN MANDI & PASTA GIGI', /SABUN MANDI|PASTA GIGI|SIKAT GIGI|MULUT|MANDI/],
+  ['ANTI NYAMUK & SERANGGA', /NYAMUK|SERANGGA|PEST/],
+  ['KOPI', /KOPI|COFFEE/],
+  ['SUSU', /SUSU|YOGURT|YOGHURT|KEJU/],
+  ['MIE, SOUN & BUBUR', /MIE|BIHUN|SOUN|PASTA|BUBUR/],
+  ['BUMBU DAPUR', /BUMBU|KECAP|SAMBAL|SAUS|SAOS|KALDU|PENYEDAP|BAHAN KUE|SANTAN|MENTEGA|MARGARIN/],
+  ['SEMBAKO', /BERAS|GULA|MINYAK GORENG|TELUR|TEPUNG|GARAM|GAS|SEMBAKO/],
+  ['MINUMAN', /MINUMAN|DRINK|TEH|AIR MINERAL|SIRUP|SOFT DRINK|SIAP MINUM/],
+  ['SNACK & BISKUIT', /SNACK|BISKUIT|WAFER|PERMEN|COKLAT|COKELAT|ROTI|KUE|ES KRIM|CEMILAN|JAJAN/],
+  ['ALAT TULIS', /ALAT TULIS|ATK|KERTAS|BUKU/],
+  ['KEBUTUHAN RUMAH', /RUMAH TANGGA|DAPUR|PLASTIK|TISU|TISSUE|BATERAI|LAMPU|KOREK|LAKBAN/]
+];
+/** Kategori lama ke kategori standar ('' kalau tidak dikenali) */
+function kategoriStandar(k) {
+  k = katUp(k);
+  if (!k) return '';
+  if (_katIdx.has(k)) return k;
+  if (KAT_LAMA[k]) return KAT_LAMA[k];
+  for (const [kat, rx] of POLA_KAT_LAMA) if (rx.test(k)) return kat;
+  return '';
+}
+/** Tebakan kategori terbaik untuk satu barang: barang material dulu, lalu nama, nama lain, kategori lama.
+ *  Mengembalikan '' kalau tidak ada petunjuk sama sekali. */
+function kategoriOtomatis(p) {
+  const lama = katUp(p.kategori);
+  if (p.kas === 'material' || (p.kas !== 'warung' && tebakMaterial(p))) return 'MATERIAL BANGUNAN';
+  if (lama === 'ROKOK' || lama.startsWith('SIGARET')) return 'ROKOK';
+  return kategoriDariNama(p.nama) || kategoriDariNama(p.alias) || kategoriStandar(lama);
+}
+/** Usulan kategori tanpa mengubah apa pun: [{ p, ke }]. semua=false: hanya barang yang kategorinya kosong,
+ *  LAIN-LAIN, atau bukan kategori standar (kategori yang sudah dipilih sendiri tidak disentuh). */
+function usulanKategori(list, semua) {
+  const out = [];
+  for (const p of list) {
+    if (!semua && p.kategori && isKategoriStandar(p.kategori) && p.kategori !== KAT_LAIN) continue;
+    const ke = kategoriOtomatis(p) || (semua || !p.kategori ? KAT_LAIN : p.kategori);
+    if (ke !== p.kategori) out.push({ p, ke });
+  }
+  return out;
+}
+/** Terapkan usulan kategori. Mengembalikan barang yang berubah. */
+function rapikanKategori(list, semua) {
+  return usulanKategori(list, semua).map(({ p, ke }) => {
+    p.kategori = ke;
+    return p;
+  });
+}
