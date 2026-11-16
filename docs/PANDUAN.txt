@@ -1,0 +1,665 @@
+KASIR TOKO MAHYU - PANDUAN SINGKAT
+==================================
+
+ISI ZIP
+- index.html ............ aplikasi kasir (dibuka di Chrome PC, jalan offline)
+- public\ ............... isi situs untuk hosting (diunggah ke GitHub, lihat PANDUAN HOSTING)
+- produk_toko_mahyu_barcode.xlsx ... data produk untuk Import (kategorinya otomatis dirapikan saat Import)
+- kode-sumber\ .......... kode program yang rapi per modul (untuk perbaikan / pengembangan)
+
+PANDUAN HOSTING (lengkap, sampai perawatan & biaya):
+https://claude.ai/code/artifact/2ab7c822-9972-48a7-b08a-c4a1a73c9415
+
+YANG BARU (15 November 2026): BUKA TUTUP OTOMATIS, BACKUP TANPA KLIK, WARNA MERAH PUTIH, SUARA
+1. Buka dan tutup kasir otomatis
+   - Kasir dibuka sendiri jam 05.00 dan ditutup sendiri jam 21.00 setiap hari. Tidak ada tombol yang
+     perlu ditekan saat aplikasi dibuka, dan spanduk "Belum buka kasir hari ini" tidak muncul lagi.
+   - Uang awal dan uang tutup diambil dari catatan aplikasi, jadi jumlah "uang seharusnya di laci"
+     tidak berubah. Uang di laci tidak dihitung ulang (selisih dicatat 0).
+   - Kalau komputer mati sebelum jam 21.00, penutupan hari itu dicatat saat aplikasi dibuka lagi,
+     dengan jam 21.00 dan jumlah uang pada saat itu. Jualan setelah jam 21.00 tetap bisa dan tetap
+     tercatat.
+   - Ingin mencocokkan uang di laci? Buka menu Uang, tekan Tutup kasir, lalu hitung seperti biasa.
+     Boleh kapan saja, tidak wajib.
+   - Ganti jam atau matikan: Pengaturan → Uang → "Buka dan tutup kasir otomatis".
+2. Backup otomatis tanpa klik
+   - Sekali sehari, saat aplikasi mulai dipakai, file backup tersimpan sendiri di folder Download
+     dengan nama backup-kasir-toko-mahyu-(tanggal).json. Hanya dibuat kalau ada data yang berubah.
+   - Spanduk "Backup otomatis perlu izin lagi" dan tombol "Aktifkan backup" tidak muncul lagi.
+   - Kenapa tidak "izinkan otomatis"? Izin menulis ke satu file pilihan diatur oleh browser, dan
+     aplikasi tidak bisa menyetujuinya sendiri. Karena itu dipakai cara unduh ke folder Download
+     yang tidak butuh izin. Backup ke file pilihan masih ada di Pengaturan → Data (tombol
+     "Izinkan lagi"). Kalau di jendela izin Chrome ada pilihan "Izinkan di setiap kunjungan",
+     pilih itu supaya tidak ditanya lagi.
+   - File backup lama di folder Download boleh dihapus sesekali, sisakan beberapa yang terbaru.
+     Ukurannya sekitar 1 MB per file.
+   - Kalau Chrome bertanya "simpan di mana" setiap unduhan, matikan di Setelan Chrome → Download →
+     "Tanyakan lokasi penyimpanan setiap file sebelum mengunduh".
+   - Folder Download ada di komputer yang sama. Supaya aman kalau komputer rusak, sesekali salin
+     file backup terbaru ke flashdisk atau Google Drive.
+3. Warna menu dan tombol (merah dan putih, sesuai logo toko)
+   - Menu yang sedang dibuka (misal Kasir): putih dengan tulisan merah dan garis merah di bawahnya.
+   - Menu yang sedang ditunjuk mouse: merah dengan tulisan putih. Tombol yang ditunjuk diberi
+     bingkai merah. Artinya itulah yang akan ditekan.
+4. Suara membacakan (bisa dinyalakan dan dimatikan)
+   - Tombol 🔇 / 🔊 ada di samping tombol 🎤 di halaman Kasir. 🔇 = mati, 🔊 = nyala. Awalnya mati.
+   - Saat menyala, kasir membacakan:
+     "Totalnya tiga puluh delapan ribu rupiah" saat jendela bayar dibuka,
+     "Kembaliannya dua belas ribu rupiah" setelah transaksi selesai,
+     "Uangnya pas. Terima kasih" atau "Uangnya kurang tiga ribu rupiah".
+   - Kecepatan bicara (Pelan, Biasa, Cepat) dan tombol Coba suara ada di Pengaturan → Toko & Struk.
+   - Memakai suara bawaan komputer. Kalau tidak terdengar, pastikan speaker menyala dan memakai
+     Google Chrome terbaru. Di Windows, suara bahasa Indonesia bisa ditambah lewat Settings → Time &
+     Language → Speech → Add voices → Indonesian.
+
+YANG BARU (9 November 2026): HARGA BELI PERKIRAAN, SALAH KETIK TETAP KETEMU, KOLOM NAMA AMAN
+1. Harga beli (modal) yang masih kosong diisi perkiraan: harga warung - 500
+   - Contoh: harga warung 5.000, harga beli perkiraan 4.500.
+   - Dijalankan sekali saat aplikasi baru dibuka (413 barang di data 9 November). Barang dari daftar
+     barcode yang belum berharga tidak diisi.
+   - Barang yang harga warungnya 500 atau kurang (misal ES BATU, STEROPOAM SEBLAK) tidak bisa
+     diisi otomatis. Isi harga belinya sendiri di menu Produk.
+   - Laba transaksi yang sudah lewat untuk barang-barang ini ikut dihitung ulang, karena dulu harga
+     belinya dianggap 0 (seluruh harga jual terhitung laba). Jadi angka "Perkiraan laba" akan lebih
+     kecil dari sebelumnya, tapi lebih mendekati kenyataan.
+   - Barang baru yang disimpan tanpa harga beli juga otomatis diberi perkiraan yang sama.
+   - Perkiraan ikut berubah kalau harga warungnya diubah. Begitu harga beli asli diisi (di form produk,
+     saat Barang masuk, atau import), perkiraannya otomatis diganti harga asli.
+   - Di form produk, kotak harga beli yang masih perkiraan tampil kosong dengan tulisan
+     "perkiraan Rp ... (warung − 500)". Menu Produk punya filter "Harga beli masih perkiraan".
+2. Salah ketik tetap ketemu
+   - Di kolom scan kasir, ketikan yang salah seperti "indomi gorng", "sampurna mild", atau
+     "kapal api specil mix" tetap memunculkan barangnya di bagian "🔎 Mungkin maksudnya".
+   - Paling bawah selalu ada "➕ Tambah produk baru". Pilih dengan panah ↓ lalu Enter, atau klik.
+     Enter tanpa memilih memasukkan barang paling atas.
+   - Kalau satu kata sama sekali tidak ada (misal "rinso cair" padahal tidak ada Rinso cair), barang
+     yang cocok dengan kata lainnya tetap ditampilkan.
+   - Di menu Produk, pencarian yang tidak ketemu juga menampilkan "Mungkin maksudnya".
+3. Kolom nama pembeli tidak kemasukan hasil scan
+   - Kalau scanner tidak sengaja membaca barcode atau QR BPOM saat kursor ada di kolom nama pembeli,
+     isinya dibuang, nama yang sedang diketik tetap utuh, dan Enter dari scanner tidak dijalankan.
+     Kasir berbunyi dua kali dan kolomnya berkedip merah.
+   - Berlaku juga untuk kolom nama pembeli di jendela Pembayaran dan kolom Nama, No. HP, Alamat
+     di form pelanggan.
+   - Kartu member (misal M0001) tetap bisa di-scan ke kolom nama pembeli.
+
+YANG BARU (4 November 2026): ISI SATUAN YANG BENAR (RENCENG, SETENGAH, PCS)
+1. Hitungan satuan yang dipakai sekarang
+   - PCS = 1 sachet.
+   - RCG = 1 renceng. Untuk minuman sachet (kopi mix, susu sachet, minuman serbuk): 1 RCG = 10 PCS.
+   - SETENGAH = setengah renceng = 5 PCS (kalau 1 RCG = 10 PCS).
+2. Data lama dibetulkan otomatis saat aplikasi baru dibuka
+   - Dulu, kalau SETENGAH ditambahkan sebagai satuan "lebih KECIL" dari PCS, hitungannya jadi
+     terbalik: satuan dasar berubah jadi SETENGAH, 1 PCS = 2 SETENGAH, 1 RCG = 20 SETENGAH.
+   - Sekarang dibetulkan jadi 1 RCG = 10 PCS dan 1 SETENGAH = 5 PCS. Minuman sachet yang
+     renceng-nya tercatat selain 10 PCS juga dibetulkan jadi 10 PCS.
+   - Stok diubah ke PCS. Penjualan SETENGAH yang dulu hanya mengurangi 0,5 PCS dihitung ulang
+     jadi 5 PCS, jadi stok sekarang ikut dikurangi selisihnya. Riwayat penjualan dan riwayat stok
+     barang itu ikut ditulis ulang dengan hitungan yang benar.
+   - Harga yang pernah diketik sendiri (misal harga SETENGAH 9.000, harga RCG 17.500) tetap dipakai.
+     Harga yang dulu dihitung otomatis dari hitungan yang salah dihitung ulang.
+   - Daftar barang yang dibetulkan muncul di jendela "Aplikasi sudah diperbarui". Sebaiknya stok
+     barang-barang itu dihitung sekali lagi di rak (menu Stok, tombol Hitung ulang stok).
+   - Sampo sachet, kental manis sachet, dan barang lain yang bukan minuman sachet tidak diubah
+     isi renceng-nya (misal tetap 1 RCG = 12 PCS atau 6 PCS kalau memang begitu).
+3. Pilihan satuan di keranjang kasir
+   - Semua barang sekarang memakai daftar pilihan satuan yang sama. Isinya satuan barang itu
+     (misal PCS, SETENGAH (isi 5 PCS), RCG (isi 10 PCS)), lalu dua pilihan:
+     ✏️ Ganti satuan ... (salah pilih)  : PCS harusnya RCG, harga dan stok tetap.
+     ➕ Tambah satuan ...               : satuan lain yang isinya beda.
+4. Tambah satuan sekarang lebih jelas
+   - Isinya boleh ditulis terhadap satuan mana saja: "1 RCG = 2 SETENGAH" atau "1 SETENGAH = 5 PCS".
+   - Di bawahnya langsung tertulis hasil hitungannya, misal "Artinya: 1 SETENGAH = 5 PCS".
+   - Pilih SETENGAH: langsung terisi 1 RCG = 2 SETENGAH. Pilih RCG untuk kopi sachet: langsung
+     terisi 1 RCG = 10 PCS. Harga yang dikosongkan dihitung otomatis dari harga PCS.
+   - Kalau setengah renceng diisi tidak sama dengan setengah dari 1 RCG, ada peringatan dan
+     ditanya dulu sebelum disimpan. Isi yang sama dengan satuan lain ditolak.
+5. Menu Produk
+   - Filter baru "⚖️ Isi satuan belum benar". Barang yang hitungannya salah diberi tanda
+     "⚠️ Isi satuan belum benar · ⚖️ Betulkan". Tekan Betulkan untuk melihat hitungan sekarang dan
+     yang seharusnya, lalu betulkan dengan sekali tekan.
+   - Kalau form produk disimpan dengan isi SETENGAH yang salah, langsung ditawari dibetulkan.
+6. Pesanan pelanggan: tulisan "setengah renceng kopi ..." masuk sebagai 1 SETENGAH (harga setengah),
+   kalau barang itu punya satuan SETENGAH.
+
+YANG BARU (3 November 2026): GANTI SATUAN DARI KASIR & QR BPOM DITOLAK
+1. Satuan salah pilih waktu input produk (misal PCS padahal RCG)
+   - Di keranjang kasir, buka daftar satuan barang itu, pilih "✏️ Ganti satuan PCS (salah pilih)",
+     pilih satuan yang benar (misal RCG), lalu tekan "✔ Ganti satuan". (Sejak 4 November tombol
+     "PCS ✏️ ganti" diganti daftar pilihan, lihat bagian 4 November di atas.)
+   - Harga dan stok TIDAK berubah. Hanya tulisan satuannya yang diganti: 1 PCS jadi 1 RCG.
+     Tidak perlu lagi mengisi "1 PCS = 1 RCG".
+   - Kalau nama barang berakhiran satuan lama (misal "... 27 GR PCS"), ada centang
+     "Ganti juga tulisan PCS di ujung nama barang". Untuk nama yang berisi ukuran
+     (misal "... 6 PCS") centangnya tidak otomatis, karena itu isi kemasan.
+   - Kalau di nama barang tertulis satuan lain (misal "KOPI ... RCG" tapi satuannya PCS),
+     pilihan RCG sudah langsung terpilih. Cukup tekan Enter.
+   - Riwayat penjualan, keranjang yang ditunda, dan hadiah poin barang itu ikut memakai satuan
+     baru. Jadi laporan dan struk cetak ulang tidak menulis satuan yang salah.
+   - Barang yang satuannya lebih dari satu (misal LIFEBUOY: PCS dan PACK isi 4): buka daftar
+     satuan di keranjang, pilih "✏️ Ganti nama satuan ...". Isi PACK tetap 4 PCS.
+   - Bisa juga dari menu Produk: di bawah nama barang ada tautan "✏️ ganti".
+   - Kalau memang mau menambah satuan yang isinya beda (misal 1 DUS = 40 PCS), pakai
+     "➕ Tambah satuan". Kalau di situ diisi 1 = 1, aplikasi menawarkan ganti satuan saja.
+2. QR BPOM tidak lagi masuk ke kasir
+   - Kemasan sekarang punya QR BPOM yang isinya nomor izin edar (tulisan MD / ML / NA + angka).
+     Itu bukan barcode barang. Kalau QR itu terscan, kasir berbunyi dua kali (nada rendah),
+     kolom scan berkedip merah, muncul pesan "Itu QR BPOM, bukan barcode barang", dan
+     tidak ada barang atau jendela "Tambah produk" yang muncul. Scan barcode garis-garis di
+     kemasan.
+   - QR alamat situs (misal cekbpom) dan kode huruf aneh hasil scanner yang tidak cocok dengan
+     barang mana pun juga ditolak dengan cara yang sama.
+   - Yang tetap jalan seperti biasa: barcode angka, kode ketik yang sudah tersimpan di barang
+     (misal "lemlilinb"), kartu member, QR / link pesanan pelanggan, dan pencarian nama yang
+     diketik tangan.
+   - Berlaku juga di kolom barcode form produk, kolom cari barang, dan scan pakai kamera HP.
+     Di kamera, kalau QR BPOM dan barcode garis terfoto bersamaan, yang dipakai barcode garisnya.
+
+YANG BARU (31 Oktober 2026, bagian 5): LOGO TOKO MAHYU
+- Logo keranjang merah Toko Mahyu tampil di kiri atas aplikasi kasir dan di kepala halaman pesan
+  pelanggan, juga sebagai ikon di tab browser.
+- Ikon aplikasi yang dipasang di HP / PC (Instal sebagai aplikasi) ikut memakai logo ini.
+  Kalau sebelumnya sudah terpasang dengan ikon lama, hapus pintasannya lalu instal ulang
+  (data tidak hilang, karena tersimpan di browser).
+- Logo disimpan di dalam file aplikasi, jadi tetap tampil walau tanpa internet.
+
+YANG BARU (31 Oktober 2026, bagian 4): SEMUA TRANSAKSI BISA DICETAK WALAU UANG KURANG
+1. Belanja + bayar utang lama, uangnya kurang: tetap bisa Selesai dan struk tercetak.
+   - Contoh: belanja 95.000 + utang lama 5.000 = 100.000, uang diterima 90.000.
+     Uang yang diterima melunasi utang lama dulu, sisanya untuk belanja. Kurang 10.000 jadi utang
+     baru. Struk menulis KURANG 10.000, STATUS: BELUM LUNAS, dan SISA UTANG BU ... 10.000.
+   - Di jendela Pembayaran langsung tampil "Utang ... setelah transaksi ini: Rp ...".
+   - Pembeli tanpa nama (utang lama dari buku): struk menulis SISA UTANG SEMUA, dan kekurangannya
+     tercatat di transaksi itu (bisa diterima nanti lewat Terima kekurangan).
+   - Cara bayar 📒 Utang juga boleh dicampur dengan utang lama.
+   - Laporan tetap benar: bagian bayar utang lama tidak dihitung sebagai penjualan / laba.
+2. Ada layanan BRILink dan uangnya kurang: sekarang juga tetap selesai dan tercetak. Uang di
+   laci BRILink hanya dihitung yang benar-benar diterima, kekurangannya tercatat.
+3. Struk pelanggan terdaftar yang punya utang selalu menulis SISA UTANG setelah transaksi itu
+   (tetap sama walau dicetak ulang).
+4. Bukti bayar bisa dicetak:
+   - Pelanggan → Bayar utang: centang "🖨️ Cetak bukti bayar" (utang sebelumnya, dibayar, sisa).
+   - Terima kekurangan: centang "🖨️ Cetak bukti terima".
+   - Pelanggan → Riwayat: tombol 🖨️ untuk cetak ulang struk belanja dan bukti bayar.
+
+YANG BARU (31 Oktober 2026, bagian 3): SUPPLIER, UTANG TOKO, TAGIH UTANG LEWAT WA
+1. Tampilan lebih rapi
+   - Tombol di samping kasir sekarang 2 kolom sama lebar: Barang tanpa data | Tambah utang lama,
+     Tunda | Lanjutkan, Struk terakhir | Kosongkan (F10). Riwayat dan Pesanan pelanggan selebar penuh.
+   - Jendela isian (misal Tambah produk) tidak lagi lebih tinggi dari layar. Isinya yang digulir,
+     tombol Simpan selalu terlihat di bawah. Kotak Kode singkat sejajar dengan Singkatan otomatis.
+2. Tagih utang lewat WhatsApp (menu Pelanggan → 💬 Tagih)
+   - Pesan tagihan sudah jadi: rincian utang yang belum lunas (cicilan menutup utang paling lama
+     dulu), total sisa, alamat dan No. WA toko. Pesannya boleh diubah dulu.
+   - Kalau No. HP pelanggan belum ada, isi di jendela itu. Nomornya otomatis tersimpan.
+   - WhatsApp terbuka memakai akun yang sedang masuk di komputer / HP itu. Pastikan akun WA toko
+     (0813-2168-5590) yang sedang masuk, lalu tekan Kirim.
+   - Tanggal terakhir ditagih tampil di daftar pelanggan. Di Beranda ada pengingat pelanggan yang
+     utangnya lebih dari 2 minggu (tidak muncul lagi selama 7 hari setelah ditagih).
+3. Menu baru 🚚 Supplier
+   - Daftar supplier / sales: nama, nama sales, No. HP, tempo bayar, barang yang dibawa, dan
+     jadwal datang (tiap minggu, 2 minggu sekali, tiap bulan, atau tidak tentu).
+   - Agenda 7 hari: sales datang, barang pesanan datang, utang jatuh tempo. Yang terlambat merah.
+   - Utang toko ke supplier: catat nota (total, jatuh tempo otomatis dari tempo), bayar atau cicil.
+     Pembayaran dari laci dicatat sebagai belanja barang dagangan: uang laci berkurang, laba tidak.
+   - Pesanan ke sales: catat isi pesanan dan kapan dijanjikan datang. Saat datang tekan
+     📥 Sudah datang, langsung lanjut ke Barang masuk (supplier sudah terpilih).
+   - Stok → 📥 Barang masuk: di "Dibayar pakai uang" ada pilihan baru "Utang ke supplier
+     (bayar nanti)". Notanya langsung tercatat.
+   - Daftar kulakan → 💬 WhatsApp: pilih sales, daftar belanja terkirim ke WA sales, lalu bisa
+     langsung dicatat sebagai pesanan (pengingat kapan datang).
+   - Beranda mengingatkan: sales datang hari ini, barang pesanan datang, utang jatuh tempo.
+   - Data supplier ikut file backup.
+
+YANG BARU (31 Oktober 2026, bagian 2): PESAN ONLINE LEBIH MUDAH UNTUK PEMBELI SEPUH
+Panduan lengkap (bisa dipakai sebelum hosting):
+https://claude.ai/artifact/VoaZkeLnKxWLJ5N8XwE7Kb
+1. Pesanan WA bisa diterima dari sekarang, tanpa menunggu hosting
+   - Pembeli mengirim daftar belanja di WA seperti biasa. Salin pesannya (blok lalu Ctrl+C),
+     di kasir tekan 📥 Pesanan pelanggan, tempel (Ctrl+V), lalu 📖 Baca pesanan.
+   - Bisa juga langsung ditempel di kolom scan kasir.
+2. Kasir sekarang paham tulisan sehari-hari pembeli
+   - Daftar dipisah koma dalam satu baris: "gula 2kg, minyak 1 liter, telur sekilo".
+   - Jumlah di depan atau di belakang: "2 renceng kopi", "kopi 2 renceng", "indomie x5".
+   - Kata bilangan: sekilo, setengah kilo, dua bungkus, dan bahasa Sunda (sakilo, satengah, tilu).
+   - "surya 16" dan "djarum super 12": angkanya dianggap bagian nama, jumlahnya 1.
+   - "telur setengah kilo" otomatis memilih TELUR AYAM 1/2 KG kalau barangnya ada.
+   - Sapaan dilewati (assalamualaikum, punten, nuhun, itu aja ya). "Dianter" jadi catatan Diantar.
+   - Awalan salinan WhatsApp "[06.58, 31/10/2026] Bu Ani:" dibuang, nama pengirim dipakai.
+   - Kalau tidak yakin, kasir tidak menebak: barisnya 🔴 dan tinggal dipilih.
+   - Di layar periksa pesanan ada keterangan "diminta: 1 dus" dan peringatan kalau satuannya tidak ada.
+3. Tombol "📋 Contoh format untuk pembeli" (di 📥 Pesanan pelanggan): teks contoh pesan untuk
+   dikirim ke status / grup WA, supaya pesan pembeli rapi dan langsung terbaca.
+4. Halaman pesan pelanggan (pesan.html) dirapikan untuk pembeli sepuh
+   - Harga Warung langsung terpilih dan tampil paling depan. Link utama = harga warung.
+     Link untuk pembeli perorangan: pesan.html?h=umum (ada di Pengaturan → Pesan Online).
+   - Kotak kuning "📝 Tulis daftar belanja" ada paling atas, di atas barang yang sering dibeli.
+   - Tulisan dan tombol lebih besar. Satuan ditulis kata (renceng, bungkus), harga lebih jelas.
+   - Langkah 1-2-3 di bagian atas. Ubah jumlah lewat jendela besar dengan tombol − dan +.
+   - Pesan WA yang dikirim rapi tanpa tanda bintang, garis, atau nomor urut:
+       2 renceng - KAPAL API SPECIAL MIX 23 GR RCG
+     Link kasir (setelah hosting) ada di baris paling bawah dan jauh lebih pendek.
+
+YANG BARU (31 Oktober 2026)
+1. Uang kurang: status di struk sekarang "STATUS: BELUM LUNAS" (bukan lagi "KURANG BAYAR").
+   Baris "KURANG Rp ..." tetap tercetak supaya jelas berapa kekurangannya.
+2. Utang lama dibayar sekalian belanja (utang yang dicatat di buku)
+   - Contoh: belanja Rp 95.000, pembeli ingat masih punya utang Rp 5.000.
+   - Di kasir tekan "📒 Tambah utang lama", ketik 5.000, Enter. Muncul baris hijau
+     "BAYAR UTANG LAMA" dan total jadi Rp 100.000. Bayar seperti biasa.
+   - Di laporan, uang 5.000 itu dihitung sebagai "bayar utang", bukan penjualan, jadi laba
+     dan omzet tidak ikut naik. Uang di laci tetap bertambah 100.000.
+   - Kalau pelanggannya dipilih dan utangnya tercatat di aplikasi, jumlahnya langsung terisi dan
+     catatan utangnya ikut berkurang. Kalau transaksinya dibatalkan, utangnya kembali lagi.
+   - Transaksi yang ada utang lamanya harus dibayar lunas (tidak bisa "utang" atau uang kurang).
+   - Untuk menghapusnya: tekan lagi "📒 Tambah utang lama" → "Hapus dari transaksi", atau tombol ×.
+3. Mulai mencatat utang di aplikasi (pengganti buku)
+   - Menu Pelanggan → "📒 Catat utang": ketik nama, jumlah, catatan. Kalau namanya belum ada,
+     pelanggan baru dibuat otomatis. Bisa juga lewat tombol "📒 +Utang" di baris pelanggan.
+   - Centang "Hanya yang masih punya utang" untuk melihat siapa saja yang masih berutang.
+   - Pelunasan lewat tombol "Bayar utang" di menu Pelanggan, atau "📒 Tambah utang lama" di kasir.
+   - Utang yang dicatat dari buku tidak mengubah uang di laci (karena barangnya sudah keluar dulu).
+4. Kotak harga dan uang hanya bisa diisi angka. Huruf, titik, dan koma yang terketik tidak masuk.
+   Titik ribuan muncul sendiri (ketik 25000, tampil 25.000).
+5. Cetak label harga rak (seperti di minimarket)
+   - Fitur "Cetak label" yang lama itu label BARCODE (stiker kecil untuk ditempel di barang dan
+     di-scan), harganya kecil dan tidak wajib. Sekarang ada pilihan baru "Label harga rak".
+   - Caranya: menu Produk → centang barang yang mau dicetak → "🏷️ Cetak label" → pilih tab
+     "Label harga rak" → atur jumlah → Cetak.
+   - Pilihan: harga Umum atau Warung, kertas A4/HVS (3 kolom, 21 label per lembar, digunting)
+     atau kertas printer struk, tampilkan juga harga satuan lain (RCG, DUS, SLOP), tampilkan
+     juga harga warung, dan tanggal cetak (supaya tahu label itu harga kapan).
+   - Setelah ganti harga: menu Produk → filter "🏷️ Harga berubah 7 hari" → centang semua →
+     Cetak label. Jadi label di rak selalu sesuai harga terbaru.
+6. Struk lebih hemat kertas: QR hanya dicetak kalau uang bayarnya TIDAK diisi (langsung Selesai).
+   Kalau uang diisi (uang pas atau berapa pun), atau bayar QRIS / transfer, struk tanpa QR.
+
+YANG BARU (30 Oktober 2026)
+1. Scan barang, cari dulu apakah sudah ada
+   - Scan barcode yang belum terdaftar: kotak "Cari dulu, mungkin barangnya sudah ada" langsung
+     siap diketik. Ketik namanya (misal: telur, lifebuoy merah). Kalau barangnya ada, tekan
+     "Pasangkan": barcode itu dipasang ke barang tersebut dan barang langsung masuk keranjang.
+     Salah ketik merek sedikit tetap ketemu (LIFEBOUY = LIFEBUOY).
+   - Kalau memang barang baru, biarkan kotak cari kosong lalu tekan Enter (sama seperti dulu).
+   - Scan barang dari daftar barcode yang belum ada harganya: di kotak isi harga sekarang langsung
+     tampil barang toko yang namanya mirip. Kalau ternyata sama, tekan "Pakai ini": barcodenya
+     pindah ke barang toko itu dan barang daftar yang dobel disembunyikan.
+2. Uang pembeli kurang, tetap bisa selesai dan cetak struk
+   - Di kotak Pembayaran ketik uang yang diterima. Kalau kurang, muncul tulisan merah KURANG dan
+     tombolnya jadi "Selesai, kurang Rp ...". Tekan Enter, struk tercetak dengan tulisan KURANG.
+   - Kalau nama pembeli diisi (atau pelanggannya sudah dipilih), kekurangannya dicatat sebagai
+     utang orang itu (dibayar lewat menu Pelanggan).
+   - Kalau nama dikosongkan, kekurangannya dicatat di transaksi itu. Uang di laci hanya dihitung
+     yang benar-benar diterima. Saat kekurangannya dibayar: Riwayat transaksi (F4) → Lihat →
+     "Terima kekurangan". Di Beranda juga ada pengingat "transaksi uangnya kurang".
+   - Kalau ada layanan BRILink di keranjang, uangnya tetap harus cukup.
+3. Tombol pintas (tekan F1 di kasir untuk melihat daftarnya)
+   F1 = daftar tombol pintas     F2 = kolom scan / cari     F3 = ganti harga Umum ↔ Warung
+   F4 = riwayat transaksi        F8 = PojokBayar / BRILink  F9 = tambah barang pakai suara
+   F10 = kosongkan keranjang (ditanya dulu, Enter = ya)     F12 = bayar     Esc = tutup
+4. Telur termasuk barang yang sering dibeli (⭐ paling atas saat dicari). Ketik "telor" atau
+   "endog" tetap ketemu TELUR. Ejaan sehari-hari lain juga dikenali: tarigu = terigu,
+   beas = beras, uyah = garam, suuk = kacang, bako = tembakau, odol = pasta gigi.
+5. Tampilan lebih jelas
+   - Semua kotak isian bergaris lebih tebal dan lebih gelap. Kotak yang sedang diisi berwarna
+     kuning muda.
+   - Kotak harga tulisannya tebal dan besar, dengan garis warna di sebelah kiri:
+       cokelat = harga beli (modal), biru = harga Umum / Perorangan, merah = harga Warung.
+   - Urutan isian harga di semua form sama: modal dulu, lalu harga umum, lalu harga warung
+     (form produk, satuan lain, tambah satuan, tambah barang dari barcode, ubah harga di kasir).
+
+YANG BARU (29 Oktober 2026, bagian 2): KATEGORI BARANG & FILTER PRODUK
+1. Kategori barang dirapikan
+   - Dulu ada 88 kategori bawaan Fastmart, banyak yang isinya cuma 1 barang dan sering keliru
+     (tabung gas masuk KOREK, korek api masuk TEMPAT LILIN, Le Minerale masuk AIR MINERAL (LAMA)).
+     Sekarang tinggal 23 kategori seperti rak warung, dan semua barang dipilah dari NAMANYA:
+       🍚 SEMBAKO (beras, gula, minyak goreng, telur, tepung, garam, gas)
+       🍜 MIE, SOUN & BUBUR      🧂 BUMBU DAPUR             🍪 SNACK & BISKUIT (permen, es krim, sosis)
+       ☕ KOPI                    🥤 MINUMAN (teh, sachet, botol, gelas, kaleng)   🥛 SUSU
+       🚬 ROKOK (juga tembakau)   💊 OBAT                    🍯 VITAMIN & MADU
+       🌿 MINYAK ANGIN & BALSEM   👶 BAYI & ANAK             🧼 SABUN MANDI & PASTA GIGI
+       💇 SAMPO & PERAWATAN RAMBUT  💄 KECANTIKAN & WAJAH   🌸 LOTION, PARFUM & DEODORAN
+       🌷 PEMBALUT & KEWANITAAN   🧺 DETERJEN & PEMBERSIH    🦟 ANTI NYAMUK & SERANGGA
+       🏠 KEBUTUHAN RUMAH (korek, baterai, lampu, plastik, tisu, benang, lem)
+       ✏️ ALAT TULIS              🧱 MATERIAL BANGUNAN       📦 LAIN-LAIN
+   - Gula, minyak goreng, telur, garam, dan gas elpiji masuk SEMBAKO karena memang termasuk
+     sembilan bahan pokok (Keputusan Menperindag No. 115/MPP/Kep/2/1998).
+   - Barang yang jenisnya belum jelas dari namanya ditaruh di LAIN-LAIN dulu (misal PANTHER,
+     TORPEDO, LAYER, PELET, TARASON, MARIOPPA, KAP KOPI). Buka Produk, pilih filter
+     "Belum ada kategori / masih LAIN-LAIN", centang barangnya, lalu tekan 🗂️ Ubah kategori.
+   - Tambah barang baru (ketik atau scan): kategorinya terisi sendiri dari nama barang. Kalau
+     kurang pas, tinggal pilih yang lain. Laci uang (Warung / Material) juga ikut menyesuaikan.
+   - Import Fastmart: kategori barang yang sudah rapi TIDAK ditimpa lagi. Barang baru dari file
+     langsung dipilah ke 23 kategori di atas.
+   - Pengaturan > Harga & Kategori > Kategori produk: tombol "🪄 Pilah otomatis" memindahkan barang
+     yang belum ada kategorinya ke kategori yang cocok. Di situ juga ada "Isi tiap kategori".
+   - Semua data sebelum pembaruan tersimpan otomatis (Pengaturan > Data & Backup > Salinan otomatis
+     sebelum pembaruan), jadi bisa dikembalikan kalau perlu.
+2. Filter di halaman Produk
+   - Setiap pilihan sekarang ada jumlah barangnya, dan yang jumlahnya 0 tidak ditampilkan.
+   - ⚠️ Perlu diperbaiki: harga jual di bawah modal, belum ada harga jual, belum ada harga beli,
+     harga warung otomatis yang belum dicek, belum ada kategori, belum ada barcode.
+   - 📈 Penjualan 30 hari terakhir: Paling laku (urut dari yang paling banyak terjual) dan Tidak laku
+     sama sekali. Berguna untuk kulakan dan memutuskan barang yang tidak usah dibeli lagi.
+   - 🏷️ Jenis barang: barang prioritas, barang material, barang baru ditambahkan 7 hari terakhir,
+     dan barang nonaktif.
+   - Pilihan kategori diurutkan seperti rak (Sembako dulu) dengan ikon dan jumlah barangnya. Kalau
+     kategori dipilih, jumlah di pilihan filter ikut menyesuaikan kategori itu.
+   - Filter lama "Harga direvisi 13 Okt" dihapus karena sudah lewat.
+3. Barcode dari daftar GitHub (List barcode 1000 Product)
+   - Daftar ini sama dengan daftar barcode bawaan aplikasi (997 barcode yang benar, 3 sisanya salah
+     ketik di file aslinya sehingga tidak dipakai).
+   - 10 barang toko yang belum punya barcode dan merek, varian, serta ukurannya sama persis dengan
+     daftar itu langsung dipasangi barcode: Sampoerna Mild Menthol 16, Dji Sam Soe Super Premium 12,
+     My Baby Telon Plus 90 ml, 4 jenis bedak My Baby, Oskadon, Vitamin C IPI, Vitamin B IPI.
+   - Semua barang lain di daftar itu (sekitar 950, misalnya Domestos, Walls, Rinso, Lux, Molto,
+     Sunlight, Lifebuoy, Marina, My Baby, Taro, Aim) ditambahkan ke Produk lengkap dengan barcode dan
+     kategorinya, tapi BELUM ADA HARGANYA. Nama yang sama dengan beberapa barcode dijadikan satu barang.
+   - Saat barang itu di-scan atau dipilih di kasir, muncul kotak "Harga barang ini belum diisi".
+     Cek namanya (data daftar ini sudah lama, jadi ada yang namanya sudah berganti), ketik harga
+     perorangan, lalu Enter. Barang langsung masuk keranjang dan scan berikutnya langsung masuk.
+     Barang tanpa harga tidak akan pernah terjual Rp 0.
+   - Barang yang tidak dijual di toko: tekan "🚫 Tidak dijual di toko" di kotak itu, atau di Produk
+     pilih filter "Dari daftar barcode, belum dicek", centang barangnya, lalu tekan 🚫 Nonaktifkan.
+     Barang nonaktif tidak muncul di kasir dan bisa diaktifkan lagi dari filter "Nonaktif".
+   - Saat mencari di kasir, barang toko sendiri tetap paling atas. Barang dari daftar yang belum ada
+     harganya diberi tanda "isi harga".
+   - Barang dari daftar tidak ikut dihitung di peringatan stok, daftar kulakan, dan "belum ada harga"
+     di Beranda. Di Beranda ada baris sendiri: "... barang dari daftar barcode belum dicek".
+   - Di perangkat baru: Pengaturan > Data & Backup > "📥 Tambah barang dari daftar barcode".
+
+YANG BARU (29 Oktober 2026)
+1. Menu PojokBayar dan BRILink sama dengan aplikasinya
+   - Di kasir sekarang ada 2 tombol: 📲 PojokBayar dan 🏦 BRILink. Isinya sama dengan menu di
+     aplikasi PojokBayar dan BRILink Mobile, urutannya juga sama:
+     PojokBayar: Paket Sahabat, Kirim Uang, Pulsa, Data, Listrik (Token / Tagihan), PDAM, Tagihan,
+       Emoney, Game Voucher, Dompet Digital, Hiburan, BP Jamsostek, Motor Listrik.
+     BRILink, Layanan Bank: Info Saldo BRI, Info Saldo Bank Lain, Transfer BRI, Transfer Bank Lain,
+       Tarik Tunai BRI, Setor Simpanan, Setor Ke Bank Lain, Setor Tunai Pinjaman, Tarik Tunai Tanpa
+       Kartu, Enable Kartu, Tarik Tunai Luar Negeri, Ubah PIN, Mini Statement, Tarik Tunai DANA.
+     BRILink, Pembayaran: BRIVA, PLN (Token / Tagihan), Telepon Pascabayar, BPJS Kesehatan, BPJS
+       Ketenagakerjaan, Asuransi, PDAM, Tokopedia, Pajak Bumi Bangunan, Multifinance, Nex Parabola,
+       Pembayaran Gadai, MPN G3, Kartu Kredit, Donasi.
+     BRILink, Top Up: Pulsa & Paket Data, Voucher Games, BRIZZI, Dompet Digital.
+     BRILink, Produk BRI: Program Pemerintah, BRI Logistik.
+     BRILink, Tiket & Belanja: Tiket Kereta Api, Tiket Pesawat, Pasar BRILink.
+   - Caranya: kerjakan di aplikasinya dulu, lalu di kasir tekan tombol yang sama, isi nomor dan
+     nominal, tekan Enter.
+   - Uangnya otomatis masuk laci yang benar: menu PojokBayar masuk laci Warung, menu BRILink masuk
+     laci BRILink. Pulsa yang dijual lewat mesin BRILink juga masuk uang BRILink.
+   - Tarik tunai (BRI, tanpa kartu, luar negeri, DANA) = uang diberikan ke pelanggan.
+     Transfer, setor, top up, dan semua pembayaran = pelanggan membayar.
+     Info saldo, ubah PIN, enable kartu, mini statement = hanya biaya jasa (kalau gratis tidak usah dicatat).
+   - Program Pemerintah: pilih dulu arah uangnya (uang diberikan ke penerima, atau pelanggan membayar).
+   - Lupa letak menunya? Ketik di kotak "Cari menu". Di kolom scan kasir juga bisa langsung ketik,
+     misal "pulsa 10rb", "tarik 500rb", "bpjs", "pajak", atau "bri" (menu BRILink yang sering dipakai).
+   - Tarif admin semua menu diatur di Pengaturan > Uang & Layanan > Tarif layanan (dikelompokkan
+     seperti menu aplikasinya). Angka bawaannya hanya contoh.
+2. Nama barang otomatis dari barcode
+   - Scan barang yang belum terdaftar: kasir mencari namanya sendiri, lalu muncul tombol besar
+     "Tambah ... tinggal isi harga". Tekan Enter, ketik harga perorangan, Enter lagi. Barang langsung
+     masuk keranjang dan tersimpan sebagai produk, jadi scan berikutnya langsung masuk.
+   - Nama dicari di daftar barcode bawaan dulu (997 barang, tanpa internet), lalu di internet:
+     API Produk Indonesia, Open Food Facts, Open Beauty Facts, dan Open Products Facts.
+   - Tidak semua barang pasti ketemu, terutama barang lokal dan curah. Kalau tidak ketemu, ketik
+     namanya sekali saja (ada juga link "lihat di Google"). Nama dari internet sebaiknya dicek sebentar.
+   - Harga warung tetap otomatis (perorangan dikurangi 500), kategori ditebak dari nama barangnya.
+   - Di Produk > Tambah produk juga sama: scan di kolom Barcode, namanya terisi sendiri
+     (atau tekan "🔎 Cari nama").
+   - Bisa dicoba atau dimatikan di Pengaturan > Toko & Struk > Nama barang otomatis dari barcode.
+
+YANG BARU (22 Oktober 2026, bagian 3): UANG DIPISAH, PULSA & BRILINK, BUKA-TUTUP KASIR
+Uang toko sekarang dipisah menjadi 3 laci, sama seperti di toko:
+   🏪 WARUNG   = barang warung + pulsa, paket data, token, tagihan, e-wallet (PojokBayar)
+   🏦 BRILINK  = tarik tunai, transfer / setor tunai, bayar lewat BRILink
+   🧱 MATERIAL = barang toko bangunan (semen, pasir, besi, paku, cat, dll)
+Menu baru 💰 Uang menunjukkan berapa uang yang SEHARUSNYA ada di tiap laci.
+
+1. Pagi: buka kasir
+   - Di halaman Kasir muncul "Belum buka kasir hari ini". Tekan ☀️ Buka kasir.
+   - Hitung uang di tiap laci, ketik jumlahnya, lalu tekan Buka kasir.
+   - Tidak mau dipakai hari ini? Tekan "Nanti saja". Untuk mematikan pengingatnya:
+     Pengaturan > Uang & Layanan.
+2. Catat pulsa, paket data, token, tagihan, e-wallet, tarik tunai, transfer
+   - Kerjakan transaksinya di aplikasi PojokBayar / mesin BRILink seperti biasa.
+   - Lalu catat di kasir: tekan tombol "📲 PojokBayar" atau "🏦 BRILink" (atau F8), pilih menunya,
+     isi nomor HP / ID pelanggan dan nominal, tekan Enter.
+   - Lebih cepat: ketik di kolom scan, misal "pulsa 10rb", "token 50rb", "dana 25rb",
+     "bpjs", "tarik 500rb", "transfer", lalu Enter. Lewat suara (🎤) juga bisa:
+     "pulsa sepuluh ribu", "tarik tunai lima ratus ribu".
+   - Harga jual terisi sendiri (nominal + admin). Harga modal = saldo PojokBayar yang terpotong.
+     Kalau di aplikasi PojokBayar angkanya berbeda, ubah saja di kolom itu.
+   - Bisa digabung dengan belanja barang dalam satu struk, misal beli rokok + token listrik.
+   - Nomor token listrik boleh diketik, nanti tercetak besar di struk.
+   - TARIK TUNAI: total bisa berubah menjadi "BERIKAN KE PELANGGAN". Contoh tarik 500.000
+     (admin 5.000) sambil beli gula 17.000: berikan Rp 478.000 ke pelanggan.
+   - Saat bayar muncul kotak "Pembagian uang ke laci". Ikuti petunjuknya, misal
+     "Masukkan ke laci Warung Rp 17.000" dan "Ambil dari laci BRILink Rp 495.000".
+   - Kalau ada layanan BRILink di keranjang, pembayarannya hanya tunai (tidak bisa utang).
+   - Layanan salah ketik? Tekan ✏️ di baris layanan pada keranjang.
+3. Barang material
+   - Barang yang namanya semen, pasir, besi, paku, cat tembok, triplek, dll otomatis masuk
+     uang Material. Barang lain tetap uang Warung.
+   - Periksa atau tambah: Pengaturan > Uang & Layanan > "Pilih barang material", atau
+     Produk > Ubah > "Uang penjualannya masuk ke". Daftarnya: Produk > filter "Barang material".
+   - Utang barang material dicatat terpisah. Saat bayar utang, pilih utang Warung atau Material.
+4. Catat pengeluaran
+   - 💰 Uang > ➖ Catat pengeluaran: pilih lacinya, untuk apa (listrik, plastik, bensin, gaji,
+     dll), lalu jumlahnya.
+   - "Ambil untuk keperluan rumah" tidak dihitung sebagai biaya toko.
+   - "Belanja barang dagangan" tidak mengurangi laba, karena modalnya sudah dihitung dari
+     harga beli barang yang terjual.
+5. Pindah uang & saldo
+   - 💰 Uang > 🔁 Pindah uang. Contoh: isi saldo PojokBayar dari laci Warung, setor uang laci
+     BRILink ke rekening, pinjamkan uang laci Warung ke laci BRILink.
+   - Saldo PojokBayar & Rekening BRILink: tekan "✔ Samakan" sekali, lalu ketik saldo yang
+     tertulis di aplikasinya. Setelah itu kasir menghitung saldonya sendiri dari transaksi.
+     Sesekali samakan lagi supaya tetap cocok.
+6. Malam: tutup kasir
+   - 💰 Uang > 🌙 Tutup kasir. Hitung uang tiap laci lalu ketik. Langsung terlihat "Pas",
+     "Lebih", atau "Kurang".
+   - Isi "Disimpan / dibawa pulang" kalau ada uang yang diambil dari laci. Sisanya otomatis
+     menjadi uang awal besok.
+   - Laporan tutup kasir bisa langsung dicetak di printer struk.
+7. Laba bersih
+   - 💰 Uang dan 📈 Laporan menampilkan per laci: penjualan, laba kotor, pengeluaran, laba bersih.
+   - Di Laporan pilih: Semua uang / Warung / BRILink / Material. File Excel juga ikut terpisah
+     (lembar Ringkasan, Transaksi, Detail Barang, Catatan Uang).
+   - Uang BRILink (tarik tunai, transfer) bukan penjualan. Pendapatan BRILink = admin.
+8. Daftar kulakan otomatis: Stok > 🛒 Daftar kulakan
+   - Berisi barang yang perlu dibeli lagi, dihitung dari rata-rata penjualan 30 hari terakhir.
+     Jumlah beli = cukup untuk 7 hari (bisa diubah).
+   - Centang, ubah jumlahnya, lalu 🖨️ Cetak atau 💬 WhatsApp ke sales / grosir.
+   - Saat barang datang tekan "✅ Barang sudah datang": stok bertambah dan uang belanjanya
+     dicatat keluar dari laci yang dipilih.
+   - Barang yang stoknya minus perlu dihitung ulang dulu (Stok > Hitung ulang stok) supaya
+     sarannya tepat.
+9. Tarif admin bawaan hanya CONTOH: pulsa 2.000, paket data 3.000, token 3.000, tagihan 3.000,
+   e-wallet 2.000, tarik tunai 5.000, transfer 5.000, bayar lewat BRILink 3.000.
+   Sesuaikan di Pengaturan > Uang & Layanan > Tarif layanan.
+Catatan: saya belum menemukan cara resmi untuk menghubungkan aplikasi PojokBayar dan BRILink
+langsung ke kasir ini, jadi transaksinya tetap dicatat dengan beberapa ketukan seperti di atas.
+Menu "Pelanggan & Member" sekarang namanya "Pelanggan" (isinya sama).
+
+YANG BARU (22 Oktober 2026, bagian 2)
+1. Harga yang sudah Anda ubah sendiri TETAP AMAN saat memperbarui aplikasi.
+   - Harga, stok, transaksi, dan pelanggan tersimpan di browser, bukan di file index.html.
+     Menimpa index.html tidak mengubah harga.
+   - Pembaruan hanya merapikan nama produk dan menggabung rokok SLOP (harga SLOP ikut harga
+     yang sekarang). Harga yang diubah sendiri tidak disentuh.
+   - Sebelum merapikan, aplikasi otomatis menyimpan salinan lengkap data. Kalau ada yang tidak
+     cocok: Pengaturan > Data & Backup > "Salinan otomatis sebelum pembaruan" > Kembalikan.
+   - JANGAN import ulang file Excel dengan centang "Timpa harga produk lama", karena itu akan
+     mengganti harga dengan harga di file.
+2. Cari barang lebih cepat di kasir, halaman Produk, dan Stok:
+   - SINGKATAN OTOMATIS: huruf depan tiap kata. Contoh: "ggs16" = Gudang Garam Surya 16,
+     "ig" = Indomie Goreng, "mgc" = Minyak Goreng Curah. Tidak perlu diatur.
+   - KODE SINGKAT sendiri: Produk > Ubah > isi "Kode singkat" (misal S16, IDG). Di kasir ketik
+     kodenya lalu Enter, barang langsung masuk keranjang seperti scan barcode.
+   - Kode harus mengandung huruf dan tidak boleh sama dengan produk lain.
+
+YANG BARU (22 Oktober 2026)
+1. Riwayat transaksi menampilkan kolom HARGA (Umum biru / Warung merah). Transaksi lama
+   juga ikut tampil benar karena kategori harganya memang sudah tersimpan. Di bawah daftar
+   ada ringkasan jumlah & total per kategori harga. Struk Warung mencetak baris "Harga: Warung".
+   Pembeli tanpa nama: "Pembeli umum" (harga Umum) atau "Tanpa nama" (harga Warung).
+2. Nama produk dirapikan otomatis (sekali saat aplikasi dibuka):
+   - Rokok: "GUDANG GARAM SURYA 16 BKS" menjadi "GUDANG GARAM SURYA 16". Angka 12/16/20 tetap
+     ada karena membedakan isi batang. Satuannya BKS (tampil di keranjang & struk).
+   - Rokok versi SLOP digabung ke produk bungkusnya sebagai satuan SLOP (1 SLOP = 10 BKS),
+     jadi tinggal pilih BKS / SLOP di keranjang.
+   - Kata ANEKA dan KEMASAN dihapus. Contoh: "TEPUNG TAPIOKA ACI 1 KG", "MINYAK GORENG CURAH 1 KG".
+   - Untuk merapikan lagi nanti: Pengaturan > Harga & Kategori > "Rapikan nama produk".
+3. Gula, ketan, dan beras masuk barang prioritas: selalu muncul paling atas saat dicari.
+4. Tambah barang pakai suara (mikrofon)
+   - Klik tombol 🎤 di samping kolom scan, atau tekan F9. Izinkan mikrofon saat Chrome bertanya.
+   - Ucapkan barang + jumlah, contoh: "indomie goreng dua", "surya enam belas dua bungkus",
+     "kopi kapal api satu renceng", "gula setengah kilo dan minyak goreng".
+   - Kalau ada beberapa barang mirip, muncul daftar bernomor: sebutkan nomornya ("dua") atau klik.
+   - "hapus" = batalkan barang terakhir dari suara, "bayar" = buka pembayaran, "selesai" = matikan.
+   - Butuh internet (pengenal suara Chrome / Edge diproses server Google). Pakai Chrome atau Edge.
+
+YANG BARU (16 Oktober 2026)
+1. Barang prioritas di pencarian
+   - Barang yang sering dibeli rumah tangga tampil paling atas saat dicari, di kasir maupun
+     di halaman pesan pelanggan. Bawaannya: terigu, aci, tapioka, minyak goreng, beras, rokok,
+     kopi, dan kopi mix (Good Day, Fresco, Luwak, Kapal Api Mix, Indocafe Coffeemix).
+     Contoh: ketik "minyak" > Minyak Goreng paling atas, bukan minyak kayu putih.
+   - Barang prioritas bertanda ⭐ di saran pencarian kasir dan di daftar Produk.
+   - Atur kata kuncinya di Pengaturan > Harga & Kategori > Barang prioritas di pencarian
+     (satu kata per baris). Per barang: Produk > Ubah > centang "⭐ Barang prioritas".
+   - Catatan: produk BERAS belum ada di data. Begitu ditambahkan, otomatis jadi prioritas.
+2. Ubah harga langsung dari kasir
+   - Ketik harga baru di kolom Harga pada keranjang, tekan Enter. Harga itu langsung tersimpan
+     ke data produk (untuk kategori harga yang sedang dipakai, misal Warung) dan halaman
+     Produk ikut berubah.
+   - Muncul catatan hijau di bawah keranjang. Kalau perubahan itu hanya untuk pembeli ini
+     (misal diskon sekali), tekan "↩ Hanya untuk transaksi ini".
+   - Tombol ✏️ di samping harga: ubah harga beli, perorangan, dan warung sekaligus.
+     Isi harga warung, harga perorangan terisi sendiri +500 (dan sebaliknya).
+   - Bisa dimatikan di Pengaturan > Toko & Struk (centang "Harga yang diubah di keranjang...").
+3. Warna harga Warung sekarang MERAH (tombol harga dan kotak TOTAL). Umum tetap biru.
+
+REVISI HARGA (13 Oktober 2026)
+- Harga yang dulu diisi di kolom perorangan ternyata harga WARUNG. Sekarang:
+  harga warung = harga lama itu, harga perorangan = harga warung + 500.
+- Berlaku untuk barang yang belum punya harga warung sendiri (341 barang di file data).
+  Barang yang dari Fastmart sudah punya harga warung sendiri tidak diubah.
+- Harmoni Kretek 16 dan Mustika Ratu Minyak Zaitun: harga warungnya lebih mahal dari
+  perorangan (salah isi), jadi ditukar.
+- Aplikasi mengubahnya otomatis sekali saat dibuka. Lihat hasilnya di Produk >
+  filter "Harga direvisi 13 Okt".
+- Kalau kemarin sempat menekan ✔ di "Cek harga warung", barang itu tidak ikut diubah otomatis.
+  Supaya semua sama dengan file data: Pengaturan > Data & Backup > Pilih file Fastmart >
+  produk_toko_mahyu_barcode.xlsx > centang "Timpa harga produk lama" > Mulai import.
+- Form produk: cukup isi harga WARUNG, harga perorangan terisi sendiri (+500). Atau isi
+  perorangan, harga warung terisi sendiri (-500). Angka 500 bisa diubah di
+  Pengaturan > Harga & Kategori.
+
+YANG BARU DI VERSI 12 Oktober 2026
+1. Kursor otomatis
+   - Setelah bayar dan cetak struk, kursor langsung kembali ke kolom scan. Pembeli berikutnya tinggal scan.
+   - Halaman Produk, Stok, Pelanggan, dan Tanya AI: kursor langsung siap di kolom pencarian.
+   - Langsung mengetik di mana saja di halaman itu juga otomatis masuk ke kolom pencarian.
+2. Kategori rokok disatukan
+   - Semua kategori SIGARET (kretek mesin, putih mesin, kretek tangan) otomatis menjadi ROKOK.
+   - Import Fastmart berikutnya juga otomatis memakai ROKOK.
+   - Menyatukan kategori lain: Pengaturan > Harga & Kategori > Kategori produk > centang > Satukan.
+   - Mengubah kategori banyak barang sekaligus: Produk > centang barang > "Ubah kategori".
+3. Harga warung otomatis (lihat juga REVISI HARGA di atas)
+   - Harga warung yang kosong diisi sendiri: harga perorangan dikurangi 500,
+     tetapi tetap untung minimal 500 dari harga beli, dan tidak lebih mahal dari harga perorangan.
+   - Harga hasil otomatis bertanda "⚙ perlu cek". Cek di Produk > tombol "Cek harga warung":
+     benar > tekan ✔, salah > ketik harga yang benar lalu Enter (langsung tersimpan).
+   - Angka 500 bisa diubah di Pengaturan > Harga & Kategori > Harga warung otomatis.
+4. Tabel produk lebih rapi: lebar kolom tetap, barcode, harga, dan stok sejajar.
+5. Daftar hadiah poin member
+   - Atur di Pengaturan > Member & Hadiah > Tambah hadiah (nama, poin, jumlah hadiah tersedia).
+     Hadiah bisa diambil dari stok barang toko, stoknya ikut berkurang.
+   - Tukar: di kasir (kotak poin > "Tukar hadiah") atau Pelanggan > ⭐ Poin > Tukar hadiah.
+   - Bukti tukar dan daftar hadiah bisa dicetak di printer struk.
+6. Pesan online untuk pelanggan (perlu hosting, lihat PANDUAN HOSTING)
+   - Pelanggan membuka link di HP, mencari barang (tahan salah ketik, paham istilah seperti
+     "endog", "aci", "odol", "gg 16"), memilih harga Perorangan atau Warung, lalu kirim WhatsApp.
+   - Ada mode "Tulis daftar": pelanggan mengetik daftar belanja sekaligus, aplikasi mencocokkan.
+   - Pesan WhatsApp berisi link. Diklik di komputer kasir, pesanan langsung terbuka di kasir.
+     Kalau kasir sedang melayani, pesanan masuk ke daftar "📥 Pesanan pelanggan" dulu.
+   - Masih bisa juga: salin pesan WhatsApp lalu Ctrl+V di kolom scan.
+   - Di jendela pesanan ada pilihan "Pakai harga" (Umum / Warung) sebelum masuk keranjang.
+7. Pengaturan dibagi per tab: Toko & Struk, Harga & Kategori, Member & Hadiah, QRIS,
+   Pesan Online, Data & Backup, Tanya AI.
+8. Beranda menampilkan pengingat: pesanan belum diproses, harga warung perlu dicek,
+   katalog online belum diperbarui.
+
+MEMPERBARUI APLIKASI (kalau sudah pernah dipakai di PC)
+- Unduh backup dulu (Pengaturan > Data & Backup > Unduh backup).
+- TIMPA file index.html lama dengan index.html baru dari zip ini, di folder yang SAMA.
+  Jangan pindah folder atau ganti nama file, supaya data lama tetap terbaca.
+- Buka aplikasinya. Muncul pemberitahuan sekali bahwa kategori rokok disatukan dan
+  harga warung kosong sudah diisi. Tekan "Cek harga warung sekarang" kalau ingin langsung mengecek.
+- Kalau sudah memakai versi online (hosting), cara update ada di PANDUAN HOSTING bagian Perawatan.
+
+A. MEMASANG DI PC (KASIR UTAMA)
+1. Ekstrak zip ini ke folder tetap, misalnya D:\Kasir Toko Mahyu
+   Jangan dijalankan langsung dari dalam zip atau folder Downloads.
+2. Klik kanan index.html > Open with > Google Chrome.
+3. Buat shortcut: menu Chrome (titik tiga) > Simpan dan bagikan > Buat pintasan > centang
+   "Buka sebagai jendela". Selanjutnya cukup buka dari ikon di desktop.
+4. PENTING: selalu buka lewat Chrome yang sama dan JANGAN mode Incognito,
+   karena data tersimpan di browser tersebut.
+
+B. PERTAMA KALI PAKAI
+1. Pengaturan > Toko & Struk: cek nama, alamat, lebar struk (72 mm), lalu "Tes cetak struk".
+2. Pengaturan > Data & Backup > Pilih file Fastmart > produk_toko_mahyu_barcode.xlsx
+3. Pengaturan > Data & Backup > "Aktifkan backup otomatis". Simpan filenya di folder
+   Google Drive / OneDrive kalau ada, supaya ikut tersimpan online.
+4. Pelanggan > tambahkan warung langganan (Toko Emih, Toko Bunda, dll)
+   dengan kategori harga "Warung".
+5. Produk > "Cek harga warung" untuk mengecek harga warung yang diisi otomatis.
+
+C. MEMAKAI KASIR
+- Kolom scan selalu siap: langsung scan / ketik tanpa klik. Setelah bayar, kursor kembali sendiri.
+- HARGA: tombol besar di atas (Umum / Warung). Kotak TOTAL ikut berubah warna
+  (biru = Umum, merah = Warung).
+- Nama pembeli boleh dikosongkan. Nama warung langganan: harga otomatis pindah ke kategorinya.
+- Salah scan/ketik: tombol ✕ merah di kolom scan, atau Esc.
+- Jumlah banyak sekaligus: ketik 10*kode atau 10*nama lalu Enter.
+- F12 = Bayar, F2 = kolom scan, F4 = riwayat transaksi, F9 = input suara, Esc = tutup jendela.
+- Riwayat (F4): cetak ulang, DUPLIKAT, atau UBAH transaksi.
+- Barang tidak ada: muncul tawaran "➕ Tambah produk baru" (Enter).
+- Barcode belum terdaftar: pasangkan ke produk, buat produk baru, atau jual tanpa data.
+- "Tunda" untuk menyimpan transaksi sementara.
+- Mouse tanpa roda: tombol ⏫ ▲ ▼ ⏬ di samping tabel.
+
+D. SATUAN (PCS / PACK / RCG / DUS)
+- Dari kasir: pilihan satuan di bawah nama barang > "➕ satuan lain…".
+  Contoh Lifebuoy: satuan baru PCS, "lebih KECIL", 1 PACK = 4 PCS, isi harga PCS > Simpan.
+- Stok dihitung dalam satuan terkecil, ditampilkan juga dalam satuan besar, misal "20 PCS (5 PACK)".
+- Produk PCS dan RCG dari Fastmart yang terpisah bisa disatukan: Produk > Ubah >
+  "Gabungkan dari produk lain".
+
+E. BARCODE SENDIRI & LABEL
+- Produk > centang barang > "Buat barcode utk yg kosong" > "Cetak label".
+- Barcode toko diawali angka 20 (EAN-13 internal), tidak bentrok dengan barcode pabrik.
+
+F. POIN MEMBER & HADIAH
+- Daftar member cukup nama (No. HP opsional), otomatis dapat ID M0001 dst.
+- Aturan bawaan: 1 poin tiap belanja kelipatan Rp 10.000, 1 poin = Rp 100 saat ditukar
+  potongan (minimal 10 poin), hanya harga Umum. Ubah di Pengaturan > Member & Hadiah.
+- Tukar potongan atau hadiah dari kotak poin kuning di kasir.
+- Kartu member: Pelanggan > ⭐ Poin > Cetak kartu.
+
+G. STRUK TANPA JENDELA PRINT (OPSIONAL)
+1. Jadikan printer thermal sebagai printer default Windows.
+2. Klik kanan shortcut Chrome > Properties > kolom Target tambahkan di akhir:  --kiosk-printing
+3. Tutup semua jendela Chrome, buka lagi lewat shortcut itu.
+
+H. TANYA AI (UJI COBA)
+- Butuh internet dan API key (Gemini, Claude, OpenAI, atau OpenRouter).
+  Isi di Pengaturan > Tanya AI, lalu "Tes koneksi". AI hanya membaca data.
+
+I. KEAMANAN DATA
+- File backup (.json) berisi SEMUA data. Rutin backup! Aplikasi mengingatkan kalau
+  lebih dari sehari belum backup.
+- API key AI dan token GitHub hanya tersimpan di perangkat ini, tidak ikut file backup.
+- Jangan "Hapus data situs" di Chrome tanpa backup dulu.
