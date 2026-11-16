@@ -1,0 +1,6 @@
+# Akhir baris seragam (LF) supaya diff tidak penuh perubahan palsu di Windows
+* text=auto eol=lf
+*.bat text eol=crlf
+*.png binary
+*.jpg binary
+*.ico binary

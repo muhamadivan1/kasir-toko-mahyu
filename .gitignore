@@ -1,0 +1,29 @@
+# ---- Data toko: JANGAN pernah masuk repo ----
+# file backup berisi penjualan, utang, dan data pelanggan
+backup-kasir-toko-mahyu*.json
+*backup*.json
+# data uji coba (salinan backup toko) untuk tests/
+tests/data/
+# file Excel produk / harga
+*.xlsx
+*.xls
+*.csv
+
+# ---- Hasil build lokal ----
+# hasil build.py; yang dipakai hosting adalah folder public/
+/dist/
+*.zip
+
+# skrip sekali pakai untuk push pertama (tidak perlu masuk repo)
+push-pertama.*
+
+# ---- Alat & sistem ----
+**/node_modules/
+__pycache__/
+*.pyc
+.env
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
