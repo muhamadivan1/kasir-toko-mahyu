@@ -1,0 +1,141 @@
+# 9 Nov 2026 (data toko 9 Nov): harga beli perkiraan (warung - 500), pencarian tahan salah ketik,
+# kolom nama pembeli tidak menerima hasil scanner.
+import os, asyncio, subprocess, time, json
+from playwright.async_api import async_playwright
+SS=os.environ.get('KASIR_TES_DATA','tests/data/')
+srv=subprocess.Popen(['python3','-m','http.server','8836','-d','dist'],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL);time.sleep(1)
+BK=json.load(open(SS+'bk2/backup.json'))
+fails=[]
+def cek(ok,msg):
+    print(('OK   ' if ok else 'GAGAL ')+msg,flush=True)
+    if not ok: fails.append(msg)
+async def main():
+  async with async_playwright() as p:
+    b=await p.chromium.launch()
+    pg=await b.new_page(viewport={'width':1366,'height':860});errs=[];pg.on('pageerror',lambda e:errs.append(str(e)))
+    pg.set_default_timeout(10000)
+    await pg.goto('http://localhost:8836/index.html');await pg.wait_for_timeout(700)
+    async with pg.expect_navigation():
+        await pg.evaluate("o=>restore(o)",BK)
+    await pg.wait_for_timeout(2500)
+    notes=await pg.evaluate("[...document.querySelectorAll('.modal')].map(m=>m.innerText).join(' ')")
+    print('  catatan:',notes[:600].replace('\n',' / '))
+    cek('harga warung − 500' in notes or 'harga warung - 500' in notes,'catatan pembaruan: harga beli perkiraan')
+    cek('Mungkin maksudnya' in notes and 'nama pembeli' in notes,'catatan pembaruan: salah ketik & kolom nama pembeli')
+    await pg.evaluate("document.querySelectorAll('.modal').forEach(m=>m.remove())")
+    # ================= A. HARGA BELI PERKIRAAN =================
+    st=json.loads(await pg.evaluate("""JSON.stringify((()=>{const A=S.products.filter(p=>p.aktif!==false&&!p.dariDaftar);
+      return {kira:A.filter(hbPerkiraan).length, kosong:A.filter(p=>!Number(p.hargaBeli)).map(p=>p.nama+' '+priceOf(p,'warung')),
+              daftar:S.products.filter(p=>p.dariDaftar&&Number(p.hargaBeli)).length,
+              salah:A.filter(hbPerkiraan).filter(p=>p.hargaBeli!==(Number(p.harga.warung)||Number(p.harga.umum))-500).length}})())"""))
+    print('  perkiraan:',st['kira'],'| masih kosong:',st['kosong'])
+    cek(st['kira']>=413,'%d barang diisi harga beli perkiraan'%st['kira'])
+    cek(st['salah']==0,'semua perkiraan = harga warung - 500')
+    cek(st['daftar']==0,'barang dari daftar barcode (belum berharga) tidak diisi')
+    cek(all(int(x.split()[-1])<=500 for x in st['kosong']),'yang masih kosong hanya barang harga warung 500 atau kurang (%d)'%len(st['kosong']))
+    D="S.products.find(p=>p.nama==='DAIA LILY JASMINE 43 G')"
+    cek(await pg.evaluate(f"[{D}.hargaBeli,{D}.hbKira].join('|')")=='4500|4500','DAIA LILY JASMINE: warung 5.000 -> harga beli 4.500')
+    cek(await pg.evaluate("S.products.find(p=>p.nama==='KERTAS A4 CAP KUDA').hargaBeli")==39500,'KERTAS A4: warung 40.000 -> 39.500')
+    nol=await pg.evaluate("S.sales.flatMap(s=>s.items||[]).filter(it=>!it.manual&&!it.layanan&&!Number(it.hargaBeli)&&hbPerkiraan(S.products.find(p=>p.id===it.productId))).length")
+    cek(nol==0,'transaksi lama: barang yang kini berperkiraan tidak ada lagi yang harga belinya 0')
+    ki=await pg.evaluate("S.sales.flatMap(s=>s.items||[]).filter(it=>it.hbKira).length")
+    cek(ki>0,'%d baris transaksi lama memakai harga beli perkiraan (laba dihitung ulang)'%ki)
+    lab=await pg.evaluate("Math.round(rekapUang(dayStart(0)-3*864e5,dayStart(1)).semua.laba)")
+    print('  laba 4 hari terakhir sesudah:',lab)
+    # Beranda: hitungan "belum ada harga beli" mengecil
+    await pg.click('nav button[data-v=beranda]');await pg.wait_for_timeout(500)
+    att=await pg.evaluate("[...document.querySelectorAll('.att')].map(a=>a.innerText.split('\\n')[0]).join(' | ')")
+    print('  beranda:',att)
+    cek('420 barang belum ada harga beli' not in att,'Beranda: "420 barang belum ada harga beli" sudah tidak ada')
+    # form produk: perkiraan tampil sebagai petunjuk, simpan tanpa diubah tetap perkiraan
+    await pg.evaluate(f"editProduct({D})");await pg.wait_for_timeout(300)
+    cek(await pg.input_value('#fhb')=='' and 'perkiraan 4.500' in (await pg.get_attribute('#fhb','placeholder')),'form produk: kotak harga beli kosong, tertulis "perkiraan 4.500 (warung − 500)"')
+    await pg.click('#fsave');await pg.wait_for_timeout(300)
+    cek(await pg.evaluate(f"[{D}.hargaBeli,hbPerkiraan({D})].join('|')")=='4500|true','simpan tanpa diubah: tetap perkiraan 4.500')
+    # harga warung naik -> perkiraan ikut
+    await pg.evaluate(f"(async()=>{{const p={D};p.harga.warung=6000;await save('products',p)}})()");await pg.wait_for_timeout(100)
+    cek(await pg.evaluate(f"{D}.hargaBeli")==5500,'harga warung diubah 6.000 -> perkiraan ikut 5.500')
+    # isi harga beli asli
+    await pg.evaluate(f"editProduct({D})");await pg.wait_for_timeout(300)
+    await pg.fill('#fhb','4200');await pg.click('#fsave');await pg.wait_for_timeout(300)
+    cek(await pg.evaluate(f"[{D}.hargaBeli,hbPerkiraan({D}),{D}.hbKira===undefined].join('|')")=='4200|false|true','harga beli diisi sendiri 4.200: jadi harga asli, perkiraan hilang')
+    await pg.evaluate(f"(async()=>{{const p={D};p.harga.warung=7000;await save('products',p)}})()")
+    cek(await pg.evaluate(f"{D}.hargaBeli")==4200,'harga asli tidak ikut berubah saat harga warung diubah')
+    # barang baru tanpa harga beli
+    await pg.evaluate("(async()=>{await save('products',{id:'tBaru',nama:'BARANG BARU TES',kategori:'',satuan:'PCS',harga:{umum:3000},stok:0,minStok:0,aktif:true,barcode:'',alias:'',units:[]})})()")
+    bb=json.loads(await pg.evaluate("JSON.stringify((p=>[p.harga.warung,p.hargaBeli,hbPerkiraan(p)])(S.products.find(p=>p.id==='tBaru')))"))
+    cek(bb==[2500,2000,True],'barang baru harga 3.000: warung otomatis 2.500, harga beli perkiraan 2.000 %s'%bb)
+    # harga warung otomatis tidak terkunci oleh perkiraan
+    await pg.evaluate("(async()=>{const p=S.products.find(p=>p.id==='tBaru');p.harga={umum:2000};await save('products',p)})()")
+    bb=json.loads(await pg.evaluate("JSON.stringify((p=>[p.harga.warung,p.hargaBeli])(S.products.find(p=>p.id==='tBaru')))"))
+    cek(bb==[1500,1000],'harga umum turun 2.000: warung 1.500, perkiraan 1.000 (tidak terkunci) %s'%bb)
+    # filter produk perkiraan
+    await pg.evaluate("prodFilter.b='hbkira';go('produk')");await pg.wait_for_timeout(500)
+    cek(await pg.locator('#pt tr [data-e]').count()>0,'Produk: filter "Harga beli masih perkiraan"')
+    await pg.evaluate("prodFilter.b='';prodFilter.q='';go('produk')");await pg.wait_for_timeout(300)
+    # ================= B. SALAH KETIK =================
+    await pg.fill('#pq','sampurna mild');await pg.dispatch_event('#pq','input');await pg.wait_for_timeout(500)
+    mp=await pg.evaluate("[...document.querySelectorAll('[data-mirip]')].map(b=>b.textContent)")
+    cek(any('SAMPOERNA MILD' in x for x in mp),'Produk: "sampurna mild" belum ada -> "Mungkin maksudnya" SAMPOERNA MILD %s'%mp[:3])
+    cek(await pg.locator('[data-addq]').count()==1,'Produk: tombol Tambah produk tetap ada')
+    await pg.click('[data-mirip]');await pg.wait_for_timeout(400)
+    cek('SAMPOERNA' in await pg.input_value('#pq') and await pg.locator('#pt tr [data-e]').count()>=1,'pilih yang mirip: daftar menampilkan barangnya')
+    await pg.click('nav button[data-v=kasir]');await pg.wait_for_timeout(300)
+    await pg.evaluate("document.querySelectorAll('.modal').forEach(m=>m.remove());S.meta.tundaBuka=dkey(Date.now());resetCart();render()");await pg.wait_for_timeout(300)
+    async def ketik(t,delay=90):
+        await pg.fill('#scan','');await pg.focus('#scan');await pg.keyboard.type(t,delay=delay);await pg.wait_for_timeout(250)
+        return await pg.evaluate("[...document.querySelectorAll('#suggest > div')].map(d=>(d.className.includes('sughead')?'#':d.dataset.add!==undefined?'+':'')+d.innerText.split('\\n')[0])")
+    s1=await ketik('indomi gorng')
+    print('  indomi gorng:',s1[:4],'...',s1[-1][:40])
+    cek(s1[0].startswith('#') and 'INDOMIE GORENG' in s1[1],'"indomi gorng": Mungkin maksudnya INDOMIE GORENG')
+    cek(s1[-1].startswith('+') and 'Tambah produk baru' in s1[-1],'pilihan Tambah produk baru tetap ada di bawah')
+    await pg.keyboard.press('Enter');await pg.wait_for_timeout(300)
+    cek('INDOMIE GORENG' in (await pg.evaluate("cart.items.map(i=>i.nama).join(',')")),'Enter: barang yang paling mirip masuk keranjang')
+    s2=await ketik('kapal api specil mix')
+    cek(any('KAPAL API SPECIAL MIX' in x for x in s2),'"kapal api specil mix" -> KAPAL API SPECIAL MIX')
+    s3=await ketik('rinso cair')
+    cek(any('RINSO' in x for x in s3) and s3[-1].startswith('+'),'"rinso cair" (tidak ada): tampil RINSO yang ada + Tambah produk')
+    s4=await ketik('dji samsoe')
+    cek(any('DJI SAM' in x for x in s4),'"dji samsoe" -> DJI SAM SOE')
+    s5=await ketik('indomie goreng')
+    cek(not any(x.startswith('#') for x in s5),'ketikan benar "indomie goreng": tidak perlu bagian Mungkin maksudnya')
+    # pilih Tambah produk dengan panah
+    n0=await pg.evaluate("cart.items.length")
+    s6=await ketik('rinso cair')
+    for _ in range(len([x for x in s6 if not x.startswith('#')])-1): await pg.keyboard.press('ArrowDown')
+    await pg.keyboard.press('Enter');await pg.wait_for_timeout(300)
+    cek('belum ada' in await pg.evaluate("[...document.querySelectorAll('.modal')].map(m=>m.innerText).join(' ')") and await pg.evaluate("cart.items.length")==n0,'↓ sampai Tambah produk lalu Enter: jendela tambah barang baru, tidak ada barang salah masuk')
+    await pg.evaluate("document.querySelectorAll('.modal').forEach(m=>m.close())");await pg.wait_for_timeout(200)
+    s7=await ketik('qzxwvy')
+    cek(len(s7)==1 and s7[0].startswith('+'),'tidak ada yang mirip sama sekali: hanya Tambah produk baru')
+    await pg.keyboard.press('Escape')
+    # ================= C. KOLOM NAMA PEMBELI =================
+    await pg.evaluate("(async()=>{await save('customers',{id:'cMm',nama:'MEMBER SCAN',kode:'M0123',tier:'umum',aktif:true})})()")
+    await pg.evaluate("document.querySelectorAll('.modal').forEach(m=>m.remove());resetCart();render()");await pg.wait_for_timeout(300)
+    bc=await pg.evaluate("S.products.find(p=>p.aktif!==false&&/^\\d{13}$/.test(p.barcode)&&priceOf(p,'umum')).barcode")
+    await pg.click('#custName');await pg.keyboard.type('Bu Ent',delay=110)
+    await pg.keyboard.type(bc,delay=4);await pg.keyboard.press('Enter');await pg.wait_for_timeout(300)
+    v=await pg.input_value('#custName')
+    cek(v=='Bu Ent','nama pembeli: barcode %s terscan saat mengetik dibuang, "Bu Ent" tetap (%s)'%(bc,v))
+    cek(await pg.evaluate("cart.items.length")==0 and 'tidak masuk ke kolom nama' in await pg.inner_text('#toast'),'tidak ada barang masuk, ada pesan')
+    cek(await pg.evaluate("document.activeElement.id")=='custName','Enter dari scanner tidak memindahkan kursor')
+    await pg.wait_for_timeout(500)
+    await pg.keyboard.type('ing',delay=110)
+    cek(await pg.input_value('#custName')=='Bu Enting','lanjut mengetik nama tetap normal')
+    await pg.keyboard.type('MD 224510001234 EXP 2027',delay=4);await pg.keyboard.press('Enter');await pg.keyboard.type('BATCH 12A',delay=4);await pg.wait_for_timeout(500)
+    cek(await pg.input_value('#custName')=='Bu Enting','QR BPOM (beberapa baris) juga dibuang dari kolom nama')
+    await pg.wait_for_timeout(500)
+    await pg.fill('#custName','');await pg.keyboard.type('M0123',delay=4);await pg.keyboard.press('Enter');await pg.wait_for_timeout(300)
+    cek(await pg.evaluate("cart.customerId")=='cMm','kartu member M0123 tetap bisa di-scan ke kolom nama')
+    await pg.evaluate("resetCart();render()");await pg.wait_for_timeout(200)
+    await pg.click('#custName');await pg.keyboard.type('Asep Sunandar',delay=100);await pg.wait_for_timeout(200)
+    cek(await pg.input_value('#custName')=='Asep Sunandar' and await pg.evaluate("cart.namaBebas")=='ASEP SUNANDAR','mengetik nama biasa tidak terganggu')
+    # kolom nama pelanggan di form pelanggan & no HP
+    await pg.evaluate("()=>{const i=document.createElement('input');i.id='cn';document.body.appendChild(i)}")
+    await pg.click('#cn');await pg.keyboard.type('Dede',delay=110);await pg.keyboard.type('8992761002010',delay=4);await pg.wait_for_timeout(300)
+    cek(await pg.input_value('#cn')=='Dede','form pelanggan: barcode tidak masuk ke kolom Nama')
+    cek(not errs,'tidak ada error halaman %s'%errs[:3])
+    await b.close()
+asyncio.run(main())
+srv.terminate()
+print('\nGAGAL:',len(fails));[print(' -',f) for f in fails]

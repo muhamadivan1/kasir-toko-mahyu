@@ -1,0 +1,173 @@
+# 31 Okt (bagian 2): pesan online ramah ortu. Harga warung default, tulis daftar di atas,
+# teks WA rapi, kasir membaca pesan WA ketikan bebas, link pesanan ringkas (v2) + v1 lama.
+import asyncio, subprocess, time, json, base64, os, shutil, urllib.parse, re
+from playwright.async_api import async_playwright
+SS=os.environ.get('KASIR_TES_DATA','tests/data/')
+HOST=SS+'t30host/'
+shutil.rmtree(HOST,ignore_errors=True);os.makedirs(HOST)
+srv=subprocess.Popen(['python3','-m','http.server','8830','-d','dist'],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+srv2=subprocess.Popen(['python3','-m','http.server','8831','-d',HOST],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL);time.sleep(1)
+BK=json.load(open(SS+'bk/backup.json'))
+fails=[]
+def cek(ok,msg):
+    print(('OK   ' if ok else 'GAGAL ')+msg)
+    if not ok: fails.append(msg)
+def b64url(o):
+    return base64.urlsafe_b64encode(json.dumps(o).encode()).decode().rstrip('=')
+BACA="""raw=>{const o=parseOrderText(raw);return {nama:o.nama,hp:o.hp,cat:o.catatan,tier:o.tier,lines:o.lines.map(l=>{const m=l.pid?matchById(l):matchLine(l);const p=S.products.find(x=>x.id===m.pid);return {teks:m.teks,st:m.st,nama:p?p.nama:'',unit:m.unitSel,qty:m.qty}})}}"""
+async def main():
+  async with async_playwright() as p:
+    b=await p.chromium.launch()
+    pg=await b.new_page(viewport={'width':1366,'height':860});errs=[];pg.on('pageerror',lambda e:errs.append(str(e)))
+    await pg.goto('http://localhost:8830/index.html');await pg.wait_for_timeout(700)
+    async with pg.expect_navigation():
+        await pg.evaluate("o=>restore(o)",BK)
+    await pg.wait_for_timeout(1800)
+    while await pg.locator('.modal [data-close]').count():
+        await pg.click('.modal [data-close]');await pg.wait_for_timeout(150)
+
+    # ---------- kasir: membaca pesan WA ketikan bebas ----------
+    r=await pg.evaluate(BACA,"[06.58, 31/10/2026] Bu Ani: gula 2 kg\n[06.58, 31/10/2026] Bu Ani: telur sekilo\nkopi kapal api 2 renceng\nsurya 16 2 bungkus")
+    L=r['lines']
+    cek(r['nama']=='Bu Ani','nama diambil dari awalan salinan WhatsApp')
+    cek(len(L)==4 and not any('[' in l['teks'] for l in L),'awalan [jam, tanggal] tidak ikut jadi barang')
+    cek(L[0]['nama']=='GULA PUTIH CURAH 1 KG' and L[0]['qty']==2,'gula 2 kg -> GULA PUTIH CURAH 1 KG x2 (%s x%s)'%(L[0]['nama'],L[0]['qty']))
+    cek(L[1]['nama']=='TELUR AYAM 1 KG' and L[1]['qty']==1,'telur sekilo -> TELUR AYAM 1 KG x1 (%s)'%L[1]['nama'])
+    cek(L[2]['nama']=='KAPAL API SPECIAL MIX 23 GR RCG' and L[2]['qty']==2 and L[2]['unit']=='RCG','kopi kapal api 2 renceng -> KAPAL API ... 2 RCG (%s)'%L[2]['nama'])
+    cek(L[3]['nama']=='GUDANG GARAM SURYA 16' and L[3]['qty']==2,'surya 16 2 bungkus: angka 16 tetap bagian nama, jumlah 2')
+    r=await pg.evaluate(BACA,"Assalamualaikum bu, pesen gula 2kg, minyak 2 liter, telur setengah kilo, rokok surya 16 2 bungkus. Nuhun")
+    L=r['lines']
+    cek(len(L)==4,'daftar satu baris dipisah koma terbaca 4 barang, sapaan & "Nuhun" dilewati (%d)'%len(L))
+    cek(L[2]['nama']=='TELUR AYAM 1/2 KG' and L[2]['qty']==1,'telur setengah kilo -> TELUR AYAM 1/2 KG x1')
+    r=await pg.evaluate(BACA,"Punten teh, abdi bade meser:\n- Gula pasir sakilo\n- royco ayam 1 renceng\nDianter ka bumi nya\nHatur nuhun")
+    cek(len(r['lines'])==2 and r['lines'][0]['nama']=='GULA PUTIH CURAH 1 KG','bahasa Sunda: sakilo, gula pasir = gula putih')
+    cek('Diantar' in r['cat'],'"Dianter" jadi catatan Diantar')
+    r=await pg.evaluate(BACA,"supermi 3\ndjarum super 12")
+    cek(r['lines'][0]['st'] in ('pilih','tidak') and r['lines'][0]['qty']==3,'kata yang tidak mirip tidak dipaksa cocok ke barang laris (supermi)')
+    cek(r['lines'][1]['nama']=='DJARUM SUPER 12' and r['lines'][1]['qty']==1,'djarum super 12 -> DJARUM SUPER 12 x1 (12 bagian nama)')
+    r=await pg.evaluate(BACA,"Nama: Ceu Imas\nindomie goreng 1 dus")
+    cek(r['lines'][0]['st']=='cek','satuan dus tidak ada di barang -> ditandai cek')
+    # format lama (sebelum 31 Okt) tetap terbaca
+    r=await pg.evaluate(BACA,"🛒 *PESANAN TOKO MAHYU*\nNama: Toko Emih\nHarga: Warung\nDiambil ke toko\n----------\n1. 2 RCG - KAPAL API SPECIAL MIX 23 GR RCG\n2. 1 KG - TEPUNG TERIGU 1 KG\n----------\nPerkiraan total: Rp 50.000")
+    cek(len(r['lines'])==2 and all(l['st']=='ok' for l in r['lines']) and r['tier']=='warung' and r['nama']=='Toko Emih','format pesan lama tetap terbaca')
+
+    # ---------- link pesanan v2 (ringkas) & v1 ----------
+    ids=await pg.evaluate("['KAPAL API SPECIAL MIX 23 GR RCG','GUDANG GARAM SURYA 16'].map(n=>S.products.find(p=>p.nama===n).id)")
+    v2=b64url([2,'Toko Emih','0812','sore',1,'warung',[[ids[0][:8],'RCG',2],['','',1,'minyak kelapa']]])
+    r=await pg.evaluate(BACA,'https://x.pages.dev/#pesan='+v2)
+    cek(r['nama']=='Toko Emih' and r['tier']=='warung' and 'Diantar' in r['cat'],'link v2 terbaca (nama, harga, diantar)')
+    cek(r['lines'][0]['nama']=='KAPAL API SPECIAL MIX 23 GR RCG' and r['lines'][0]['qty']==2 and r['lines'][0]['teks']=='KAPAL API SPECIAL MIX 23 GR RCG','link v2: barang dicocokkan lewat kode, nama terisi')
+    cek(r['lines'][1]['teks']=='minyak kelapa','link v2: barang di luar daftar tetap bernama')
+    v2b=b64url([2,'A','','',0,'warung',[['zzzzzzzzzz','BKS',1]]])
+    r=await pg.evaluate(BACA,'PESANAN TOKO MAHYU\nNama: A\n\n1 bungkus - GUDANG GARAM SURYA 16\n\nBuka di kasir:\nhttps://x.pages.dev/#pesan='+v2b)
+    cek(r['lines'][0]['nama']=='GUDANG GARAM SURYA 16','link v2 + teks: kode tidak dikenal, nama diambil dari teks pesan')
+    v1=b64url({'v':1,'n':'Lama','h':'','c':'','a':'Diambil ke toko','t':'umum','i':[[ids[1],'BKS',3,'GUDANG GARAM SURYA 16']]})
+    r=await pg.evaluate(BACA,'#pesan='+v1)
+    cek(r['nama']=='Lama' and r['lines'][0]['qty']==3 and r['lines'][0]['nama']=='GUDANG GARAM SURYA 16','link v1 lama tetap terbaca')
+
+    # ---------- kasir: dialog pesanan, contoh format, tempel di kolom scan ----------
+    await pg.click('nav button[data-v=kasir]');await pg.wait_for_timeout(200)
+    if await pg.locator('#bukaNanti').count(): await pg.click('#bukaNanti');await pg.wait_for_timeout(150)
+    await pg.evaluate("ordersDialog()");await pg.wait_for_timeout(200)
+    await pg.click('#ocontoh');await pg.wait_for_timeout(200)
+    contoh=await pg.input_value('#cfT')
+    cek('Nama: Bu Ani' in contoh and 'gula 2 kg' in contoh,'tombol Contoh format untuk pembeli')
+    r=await pg.evaluate(BACA,contoh)
+    cek(len(r['lines'])==4 and r['nama']=='Bu Ani','contoh format (kalimat petunjuk ikut tersalin) terbaca 4 barang (%d)'%len(r['lines']))
+    await pg.click('.modal:last-child [data-close]');await pg.wait_for_timeout(100)
+    await pg.fill('#opaste','Nama: Bu Ani\ngula 2 kg\nindomie goreng 1 dus')
+    await pg.click('#oread');await pg.wait_for_timeout(400)
+    rows=await pg.evaluate("[...document.querySelectorAll('#orb tr')].map(r=>r.innerText)")
+    cek(len(rows)==2 and 'diminta: 2 kg' in rows[0] and 'satuan dus tidak ada' in rows[1],'periksa pesanan: tampil "diminta" & peringatan satuan')
+    await pg.click('#orCart');await pg.wait_for_timeout(400)
+    cart=await pg.evaluate("cart.items.map(i=>[i.nama,i.qty,i.satuan])")
+    cek(len(cart)==2 and cart[0][1]==2,'pesanan masuk keranjang %s'%cart)
+    await pg.evaluate("kosongkanKeranjang()");await pg.wait_for_timeout(150)
+    if await pg.locator('.modal [data-yes]').count(): await pg.click('.modal [data-yes]')
+    await pg.evaluate("""()=>{const i=document.querySelector('#scan');const dt=new DataTransfer();dt.setData('text/plain','gula 2kg, minyak 1 liter, telur sekilo');i.dispatchEvent(new ClipboardEvent('paste',{clipboardData:dt,bubbles:true,cancelable:true}))}""")
+    await pg.wait_for_timeout(400)
+    n=await pg.locator('#orb tr').count()
+    cek(n==3,'daftar dipisah koma ditempel di kolom scan langsung dibaca sebagai pesanan (%d)'%n)
+    await pg.evaluate("document.querySelectorAll('.modal').forEach(m=>m.remove())")
+
+    # ---------- link pelanggan: harga warung default ----------
+    await pg.evaluate("(async()=>{online().url='localhost:8831';await saveMeta('settings')})()")
+    lk=await pg.evaluate("[pesanLink('warung'),pesanLink('umum'),pesanLink(),katalogData().hd]")
+    cek(lk[0].endswith('pesan.html') and lk[1].endswith('?h=umum') and lk[2]==lk[0] and lk[3]=='warung','link utama = harga warung, perorangan pakai ?h=umum %s'%lk)
+
+    # ---------- halaman pesan (file mandiri) ----------
+    await pg.evaluate("(async()=>{online().url='';await saveMeta('settings')})()")
+    html=await pg.evaluate("pesanStandaloneHTML()")
+    open(SS+'t30_pesan.html','w').write(html)
+    katalog=await pg.evaluate("(async()=>{online().url='http://localhost:8831/';await saveMeta('settings');return JSON.stringify(katalogData())})()")
+    open(HOST+'katalog.json','w').write(katalog)
+    shutil.copy('dist/pesan.html',HOST+'pesan.html')
+    ctx=await b.new_context(viewport={'width':360,'height':780},is_mobile=True,has_touch=True)
+    m=await ctx.new_page();e2=[];m.on('pageerror',lambda e:e2.append(str(e)))
+    await m.add_init_script("window._dialogBawaan=0;window.prompt=()=>{window._dialogBawaan++;return null};window.confirm=()=>{window._dialogBawaan++;return true};window.alert=()=>{window._dialogBawaan++}")
+    await m.goto('file://'+SS+'t30_pesan.html');await m.wait_for_timeout(700)
+    t=await m.evaluate("[document.querySelector('[data-tier].on')?.dataset.tier,document.querySelector('[data-tier]').dataset.tier]")
+    cek(t==['warung','warung'],'harga Warung langsung terpilih & tampil paling depan')
+    urut=await m.evaluate("(()=>{const a=document.querySelector('.tulis'),j=[...document.querySelectorAll('.judul')].find(x=>/sering dibeli/.test(x.textContent));return !!a&&!!j&&(a.compareDocumentPosition(j)&Node.DOCUMENT_POSITION_FOLLOWING)>0})()")
+    cek(urut,'kotak Tulis daftar ada di atas barang yang sering dibeli')
+    lebar=await m.evaluate("document.scrollingElement.scrollWidth")
+    cek(lebar<=360,'tidak ada geser ke samping di layar HP 360px (%d)'%lebar)
+    # pilihan harga lama "umum" yang tidak dipilih sendiri -> kembali ke warung; yang dipilih sendiri diingat
+    await m.evaluate("localStorage.setItem('pesan_v2_TOKO MAHYU',JSON.stringify({tier:'umum',items:[]}))");await m.reload();await m.wait_for_timeout(600)
+    cek(await m.evaluate("document.querySelector('[data-tier].on').dataset.tier")=='warung','simpanan lama harga umum (bukan pilihan sendiri) -> warung')
+    await m.click('[data-tier=umum]');await m.reload();await m.wait_for_timeout(600)
+    cek(await m.evaluate("document.querySelector('[data-tier].on').dataset.tier")=='umum','harga yang dipilih sendiri diingat')
+    await m.click('[data-tier=warung]')
+    # tulis daftar
+    await m.fill('#tl','gula 2 kg\nkopi kapal api 2 renceng\ntelur sekilo\nsurya 16 1 slop\nminyak kelapa 1 liter')
+    await m.click('#tlGo');await m.wait_for_timeout(400)
+    kls=await m.evaluate("[...document.querySelectorAll('.cocok')].map(c=>c.className.split(' ')[1])")
+    cek(len(kls)==5 and kls[-1]=='tidak','hasil cocok tampil per baris %s'%kls)
+    cek(await m.evaluate("/tidak ada untuk barang ini/.test(document.querySelectorAll('.cocok')[3].innerText)"),'satuan slop tidak ada -> pesan jelas di baris itu')
+    # ubah jumlah lewat jendela besar (bukan prompt bawaan)
+    await m.click('.cocok >> nth=0 >> [data-cs]');await m.wait_for_timeout(150)
+    cek(await m.locator('.dlg #dq').count()==1,'jendela jumlah besar muncul')
+    await m.click('.dlg [data-p]');await m.click('.dlg [data-ok]');await m.wait_for_timeout(150)
+    cek('3 kg' in await m.inner_text('.cocok >> nth=0'),'jumlah gula jadi 3 kg')
+    await m.click('#tlAdd');await m.wait_for_timeout(400)
+    cek(await m.is_visible('#sheet'),'setelah dimasukkan, lembar pesanan langsung terbuka')
+    await m.click('#kWa');await m.wait_for_timeout(200)
+    cek('Isi nama' in await m.inner_text('#toast'),'nama wajib diisi sebelum kirim')
+    await m.fill('#fNama','Toko Emih')
+    await m.evaluate("window.open=(u)=>{window._wa=u;return {}}")
+    await m.click('#kWa');await m.wait_for_timeout(200)
+    wa=urllib.parse.unquote(await m.evaluate("window._wa.split('text=')[1]"))
+    print(wa)
+    baris=[x for x in wa.split('\n') if re.match(r'^\d',x)]
+    cek('*' not in wa and '---' not in wa and '🛒' not in wa and '[' not in wa,'teks WA tanpa bintang, garis, emoji, kurung siku')
+    cek(len(baris)==5 and all(re.match(r'^\d+(,\d+)? [a-z ]+ - \S',x) for x in baris),'tiap barang satu baris "jumlah satuan - NAMA"')
+    cek('Harga: Warung' in wa and 'Diambil ke toko' in wa and 'Nama: Toko Emih' in wa,'nama, harga, cara ambil tertulis')
+    cek('Buka di kasir' not in wa,'file mandiri (tanpa hosting): tidak ada link panjang')
+    cek(await m.is_visible('#kSudah'),'layar "Sudah terkirim?" tampil')
+    await m.click('#kSudah');await m.wait_for_timeout(200)
+    cek(await m.evaluate("_dialogBawaan")==0,'tidak ada prompt/confirm/alert bawaan browser')
+    # teks WA ditempel kembali di kasir
+    r=await pg.evaluate(BACA,wa)
+    cek([(l['nama'] or l['teks'],l['qty']) for l in r['lines']]==[('GULA PUTIH CURAH 1 KG',3),('KAPAL API SPECIAL MIX 23 GR RCG',2),('TELUR AYAM 1 KG',1),('GUDANG GARAM SURYA 16',1),('minyak kelapa',1)],'teks WA dari halaman terbaca persis di kasir %s'%[(l['nama'] or l['teks'],l['qty'],l['st']) for l in r['lines']])
+    cek(all(l['st']=='ok' for l in r['lines'][:4]),'semua barang dari halaman langsung cocok (✔)')
+
+    # ---------- halaman pesan dari hosting: link kasir ringkas ----------
+    h=await ctx.new_page();h.on('pageerror',lambda e:e2.append(str(e)))
+    await h.goto('http://localhost:8831/pesan.html');await h.wait_for_timeout(800)
+    cek(await h.evaluate("document.querySelector('[data-tier].on').dataset.tier")=='warung','hosting: harga warung default')
+    await h.click('.it >> nth=0 >> .add >> nth=0');await h.click('.it >> nth=1 >> .add >> nth=0')
+    await h.fill('#q','minyak kelapa murni');await h.wait_for_timeout(300);await h.click('[data-free]')
+    await h.click('#barBtn');await h.fill('#fNama','Bu Ani')
+    await h.evaluate("window.open=(u)=>{window._wa=u;return {}}")
+    await h.click('#kWa');await h.wait_for_timeout(200)
+    wa2=urllib.parse.unquote(await h.evaluate("window._wa.split('text=')[1]"))
+    link=[x for x in wa2.split('\n') if '#pesan=' in x]
+    cek(len(link)==1 and wa2.index('Buka di kasir')>wa2.index('Perkiraan total') if 'Perkiraan total' in wa2 else len(link)==1,'hosting: link kasir ada di paling bawah')
+    cek(len(link[0])<260,'link kasir ringkas (%d karakter untuk 3 barang)'%len(link[0]))
+    r1=await pg.evaluate(BACA,link[0]);r2=await pg.evaluate(BACA,wa2)
+    cek(len(r1['lines'])==3 and [l['nama'] for l in r1['lines'][:2]]==[l['nama'] for l in r2['lines'][:2]] and r1['lines'][2]['teks']=='minyak kelapa murni','link saja dan teks lengkap menghasilkan barang yang sama')
+    cek(e2==[],'halaman pesan tanpa error JS %s'%e2)
+    cek(errs==[],'kasir tanpa error JS %s'%errs)
+    await b.close()
+asyncio.run(main());srv.terminate();srv2.terminate()
+print('GAGAL:', fails or 'tidak ada')
