@@ -1,0 +1,9 @@
+# Cloudflare Pages: selalu cek versi terbaru untuk file yang sering berubah
+/katalog.json
+  Cache-Control: no-cache
+/index.html
+  Cache-Control: no-cache
+/pesan.html
+  Cache-Control: no-cache
+/sw.js
+  Cache-Control: no-cache

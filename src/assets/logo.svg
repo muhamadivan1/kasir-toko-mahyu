@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="Toko Mahyu">
+  <rect width="100" height="100" rx="6" fill="#d22222"/>
+  <g fill="none" stroke="#fff" stroke-linecap="round">
+    <circle cx="39.2" cy="19.4" r="4.45" stroke-width="2.7"/>
+    <circle cx="60.8" cy="19.4" r="4.45" stroke-width="2.7"/>
+    <path d="M36.3 25 L29.3 43 M63.7 25 L70.7 43" stroke-width="3.1"/>
+  </g>
+  <rect x="13.1" y="42" width="73.8" height="8.2" rx="3.8" fill="#fff"/>
+  <path d="M18.6 50 H81.4 L76.6 82.6 Q76 86.8 71.8 86.8 H28.2 Q24 86.8 23.4 82.6 Z" fill="#fff"/>
+  <g fill="#d22222">
+    <rect x="22.1" y="50.1" width="17.1" height="2.2" rx="1.1"/>
+    <rect x="44.6" y="50.1" width="32" height="2.2" rx="1.1"/>
+    <rect x="29.5" y="58.2" width="2.8" height="20.4" rx="1.4"/>
+    <rect x="36.7" y="58.2" width="2.8" height="20.4" rx="1.4"/>
+    <rect x="44.6" y="58.2" width="2.8" height="20.4" rx="1.4"/>
+    <rect x="52.6" y="58.2" width="2.8" height="20.4" rx="1.4"/>
+    <rect x="60.5" y="58.2" width="2.8" height="20.4" rx="1.4"/>
+    <rect x="67.7" y="58.2" width="2.8" height="20.4" rx="1.4"/>
+  </g>
+</svg>
