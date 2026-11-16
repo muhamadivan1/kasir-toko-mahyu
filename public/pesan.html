@@ -1,0 +1,4726 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1d4e89">
+<meta name="description" content="Pesan barang dari HP, kirim lewat WhatsApp.">
+<title>Pesan Online</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IlRva28gTWFoeXUiPgogIDxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiByeD0iNiIgZmlsbD0iI2QyMjIyMiIvPgogIDxnIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIj4KICAgIDxjaXJjbGUgY3g9IjM5LjIiIGN5PSIxOS40IiByPSI0LjQ1IiBzdHJva2Utd2lkdGg9IjIuNyIvPgogICAgPGNpcmNsZSBjeD0iNjAuOCIgY3k9IjE5LjQiIHI9IjQuNDUiIHN0cm9rZS13aWR0aD0iMi43Ii8+CiAgICA8cGF0aCBkPSJNMzYuMyAyNSBMMjkuMyA0MyBNNjMuNyAyNSBMNzAuNyA0MyIgc3Ryb2tlLXdpZHRoPSIzLjEiLz4KICA8L2c+CiAgPHJlY3QgeD0iMTMuMSIgeT0iNDIiIHdpZHRoPSI3My44IiBoZWlnaHQ9IjguMiIgcng9IjMuOCIgZmlsbD0iI2ZmZiIvPgogIDxwYXRoIGQ9Ik0xOC42IDUwIEg4MS40IEw3Ni42IDgyLjYgUTc2IDg2LjggNzEuOCA4Ni44IEgyOC4yIFEyNCA4Ni44IDIzLjQgODIuNiBaIiBmaWxsPSIjZmZmIi8+CiAgPGcgZmlsbD0iI2QyMjIyMiI+CiAgICA8cmVjdCB4PSIyMi4xIiB5PSI1MC4xIiB3aWR0aD0iMTcuMSIgaGVpZ2h0PSIyLjIiIHJ4PSIxLjEiLz4KICAgIDxyZWN0IHg9IjQ0LjYiIHk9IjUwLjEiIHdpZHRoPSIzMiIgaGVpZ2h0PSIyLjIiIHJ4PSIxLjEiLz4KICAgIDxyZWN0IHg9IjI5LjUiIHk9IjU4LjIiIHdpZHRoPSIyLjgiIGhlaWdodD0iMjAuNCIgcng9IjEuNCIvPgogICAgPHJlY3QgeD0iMzYuNyIgeT0iNTguMiIgd2lkdGg9IjIuOCIgaGVpZ2h0PSIyMC40IiByeD0iMS40Ii8+CiAgICA8cmVjdCB4PSI0NC42IiB5PSI1OC4yIiB3aWR0aD0iMi44IiBoZWlnaHQ9IjIwLjQiIHJ4PSIxLjQiLz4KICAgIDxyZWN0IHg9IjUyLjYiIHk9IjU4LjIiIHdpZHRoPSIyLjgiIGhlaWdodD0iMjAuNCIgcng9IjEuNCIvPgogICAgPHJlY3QgeD0iNjAuNSIgeT0iNTguMiIgd2lkdGg9IjIuOCIgaGVpZ2h0PSIyMC40IiByeD0iMS40Ii8+CiAgICA8cmVjdCB4PSI2Ny43IiB5PSI1OC4yIiB3aWR0aD0iMi44IiBoZWlnaHQ9IjIwLjQiIHJ4PSIxLjQiLz4KICA8L2c+Cjwvc3ZnPg==">
+<style>
+/* ============ HALAMAN PESAN PELANGGAN (tampilan HP, ramah untuk pembeli sepuh) ============
+ * Tulisan besar, tombol besar, kontras tinggi. Satu warna untuk satu arti:
+ * biru = pilih / cari, hijau = sudah masuk pesanan / kirim, kuning = tulis daftar, merah = hapus.
+ */
+:root {
+  color-scheme: light;
+  --pri: #1d4e89;
+  --pri2: #2c6bb5;
+  --ok: #17803d;
+  --ok-bg: #e9f7ee;
+  --bad: #c62828;
+  --warn: #b85c00;
+  --warn-bg: #fff3e0;
+  --ink: #16202c;
+  --muted: #56606e;
+  --line: #d9e0ea;
+  --soft: #e8f0fb;
+  --bg: #eef2f7;
+  --kuning: #f2b705;
+  --kuning-bg: #fff9e3;
+}
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+html,
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    Arial,
+    sans-serif;
+  font-size: 18px;
+  line-height: 1.4;
+}
+body.kunci {
+  overflow: hidden;
+}
+button {
+  font: inherit;
+  cursor: pointer;
+}
+input,
+textarea,
+select {
+  font: inherit;
+  width: 100%;
+  border: 2px solid #b9c4d3;
+  border-radius: 12px;
+  padding: 12px 14px;
+  min-height: 56px;
+  background: #fff;
+  color: var(--ink);
+}
+input:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--pri2);
+  background: #fffdf0;
+  box-shadow: 0 0 0 3px #2c6bb533;
+}
+input::placeholder,
+textarea::placeholder {
+  color: #8a94a3;
+}
+.loading,
+.gagal {
+  max-width: 520px;
+  margin: 15vh auto;
+  padding: 24px;
+  text-align: center;
+  font-size: 19px;
+  color: var(--muted);
+}
+.gagal b {
+  color: var(--ink);
+}
+.wrap {
+  max-width: 720px;
+  margin: 0 auto;
+}
+/* ---- kepala halaman ---- */
+.hd {
+  background: var(--pri);
+  color: #fff;
+  padding: 14px 16px 12px;
+}
+.hd-nama {
+  font-size: 23px;
+  font-weight: 800;
+  line-height: 1.2;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.hd-logo {
+  width: 42px;
+  height: 42px;
+  flex: none;
+  border-radius: 9px;
+  box-shadow: 0 0 0 2px #ffffff66;
+}
+.hd-sub {
+  font-size: 14px;
+  opacity: 0.88;
+  margin-top: 2px;
+}
+.hd-cara {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin-top: 10px;
+  font-size: 15px;
+  line-height: 1.3;
+}
+.hd-cara > div {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.hd-cara span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--kuning);
+  color: #3a2a00;
+  font-weight: 800;
+  font-size: 14px;
+}
+.seg {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+.seg button {
+  flex: 1;
+  border: 2px solid #ffffff55;
+  border-radius: 12px;
+  padding: 8px 4px;
+  background: #ffffff1f;
+  color: #fff;
+  line-height: 1.2;
+  min-height: 58px;
+}
+.seg button b {
+  display: block;
+  font-size: 17px;
+}
+.seg button small {
+  display: block;
+  font-size: 13px;
+  opacity: 0.9;
+  margin-top: 2px;
+}
+.seg button.on {
+  background: #fff;
+  border-color: #fff;
+  color: var(--pri);
+}
+.seg button.on b::before {
+  content: '✔ ';
+  color: var(--ok);
+}
+.cariwrap {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--pri);
+  padding: 0 16px 10px;
+  box-shadow: 0 3px 8px #0003;
+}
+.cari {
+  position: relative;
+  padding-top: 2px;
+}
+.cari .ic {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 19px;
+  pointer-events: none;
+}
+.cari input {
+  padding-left: 46px;
+  padding-right: 54px;
+  font-size: 19px;
+  border: 0;
+  min-height: 56px;
+}
+.cari input::-webkit-search-cancel-button {
+  display: none;
+}
+.cari .x {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: #fde8e8;
+  color: var(--bad);
+  font-weight: 800;
+  font-size: 18px;
+}
+.chips {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 10px 24px 2px 0;
+  scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(90deg, #000 85%, transparent);
+  mask-image: linear-gradient(90deg, #000 85%, transparent);
+}
+.chips::-webkit-scrollbar {
+  display: none;
+}
+.chips button {
+  flex: none;
+  border: 0;
+  border-radius: 22px;
+  padding: 9px 15px;
+  background: #ffffff2b;
+  color: #fff;
+  font-weight: 700;
+  font-size: 16px;
+  white-space: nowrap;
+}
+.chips button.on {
+  background: #fff;
+  color: var(--pri);
+}
+/* ---- isi ---- */
+.list {
+  padding: 10px 12px 130px;
+}
+.judul {
+  font-size: 17px;
+  color: var(--ink);
+  margin: 18px 4px 8px;
+  font-weight: 800;
+}
+/* kotak tulis daftar: paling atas dan paling mencolok */
+.tulis {
+  background: var(--kuning-bg);
+  border: 3px solid var(--kuning);
+  border-radius: 16px;
+  padding: 14px;
+  margin-top: 4px;
+}
+.tulis h2 {
+  font-size: 21px;
+  margin: 0 0 4px;
+}
+.tulis > p {
+  margin: 0 0 10px;
+  font-size: 16px;
+  color: #4a4130;
+}
+.tulis textarea {
+  min-height: 150px;
+  font-size: 19px;
+  line-height: 1.5;
+  border-color: #c9a227;
+}
+.ringkas {
+  margin: 14px 2px 8px;
+  font-size: 16px;
+}
+.t-oranye {
+  color: var(--warn);
+  font-weight: 800;
+}
+.t-merah {
+  color: var(--bad);
+  font-weight: 800;
+}
+.it {
+  background: #fff;
+  border-radius: 14px;
+  padding: 12px;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 3px #0002;
+}
+.it-nm b {
+  display: block;
+  font-size: 18px;
+  line-height: 1.3;
+}
+.it-nm small {
+  display: block;
+  color: var(--muted);
+  font-size: 15px;
+  margin-top: 2px;
+}
+.it-u {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+.add {
+  flex: 1 1 140px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--pri);
+  color: #fff;
+  padding: 8px 10px;
+  min-height: 60px;
+  text-align: center;
+  line-height: 1.2;
+}
+.add .hrg {
+  display: block;
+  font-size: 19px;
+  font-weight: 800;
+}
+.add .sat {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  opacity: 0.95;
+}
+.step {
+  flex: 1 1 140px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  border: 3px solid var(--ok);
+  border-radius: 12px;
+  padding: 3px;
+  min-height: 60px;
+  background: var(--ok-bg);
+}
+.step > button:not(.sq) {
+  flex: none;
+  width: 48px;
+  height: 48px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--ok);
+  color: #fff;
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1;
+}
+.step .sq {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+  line-height: 1.15;
+  background: none;
+  border: 0;
+  color: var(--ink);
+  padding: 0 2px;
+}
+.step .sq b {
+  display: block;
+  font-size: 18px;
+}
+.step .sq small {
+  display: block;
+  font-size: 13px;
+  color: var(--muted);
+}
+.step.kecil {
+  flex: 0 1 220px;
+  min-height: 52px;
+  border-width: 2px;
+}
+.step.kecil > button:not(.sq) {
+  width: 42px;
+  height: 42px;
+  font-size: 22px;
+}
+.free {
+  background: #fff;
+  border: 2px dashed #a9b6c8;
+  border-radius: 14px;
+  padding: 12px;
+  margin: 12px 0;
+  color: var(--muted);
+  font-size: 16px;
+}
+.free button {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--soft);
+  color: var(--pri);
+  font-weight: 800;
+  padding: 14px;
+  font-size: 17px;
+}
+.more {
+  display: block;
+  width: 100%;
+  border: 0;
+  border-radius: 12px;
+  background: var(--soft);
+  color: var(--pri);
+  font-weight: 700;
+  padding: 16px;
+  margin: 6px 0 12px;
+  font-size: 17px;
+}
+.kosong {
+  text-align: center;
+  color: var(--muted);
+  padding: 28px 10px;
+}
+.katgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 8px;
+}
+.katgrid button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-align: left;
+  border: 2px solid var(--line);
+  background: #fff;
+  border-radius: 12px;
+  padding: 10px;
+  min-height: 58px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.2;
+}
+.katgrid button span {
+  font-size: 22px;
+}
+/* ---- hasil tulis daftar ---- */
+.cocok {
+  background: #fff;
+  border-radius: 14px;
+  padding: 12px;
+  margin-bottom: 10px;
+  border: 2px solid var(--line);
+  border-left: 8px solid var(--ok);
+}
+.cocok.ragu {
+  border-left-color: var(--warn);
+  background: #fffaf3;
+}
+.cocok.tidak {
+  border-left-color: var(--bad);
+  background: #fff7f7;
+}
+.cocok .asli {
+  font-size: 15px;
+  color: var(--muted);
+}
+.cocok .asli b {
+  color: var(--ink);
+}
+.cocok .pilih {
+  font-weight: 800;
+  font-size: 18px;
+  margin: 4px 0;
+}
+.cocok.pas .pilih {
+  color: var(--ok);
+}
+.cocok.ragu .pilih {
+  color: var(--warn);
+}
+.cocok.tidak .pilih {
+  color: var(--bad);
+}
+.saran {
+  font-size: 15px;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.cq {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 8px;
+}
+.cq-h {
+  font-weight: 800;
+  font-size: 18px;
+  white-space: nowrap;
+}
+.ganti {
+  margin-top: 8px;
+  border: 2px solid var(--line);
+  background: #fff;
+  border-radius: 22px;
+  padding: 8px 14px;
+  font-size: 15px;
+  color: var(--pri);
+  font-weight: 700;
+}
+.units,
+.alt {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+.units button,
+.alt button {
+  border: 2px solid var(--line);
+  background: #fff;
+  border-radius: 22px;
+  padding: 8px 14px;
+  font-size: 15px;
+  color: var(--ink);
+  text-align: left;
+}
+.units button.on,
+.alt button.on {
+  border-color: var(--ok);
+  background: var(--ok-bg);
+  color: var(--ok);
+  font-weight: 800;
+}
+.buang {
+  margin-top: 10px;
+  border: 0;
+  background: none;
+  color: var(--bad);
+  font-size: 15px;
+  font-weight: 700;
+  padding: 6px 0;
+}
+/* ---- bar bawah ---- */
+.bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 30;
+  padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+  background: linear-gradient(#eef2f700, #eef2f7 30%);
+}
+.bar button {
+  display: flex;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border: 0;
+  border-radius: 16px;
+  padding: 14px 18px;
+  min-height: 64px;
+  background: var(--ok);
+  color: #fff;
+  font-size: 18px;
+  box-shadow: 0 4px 14px #17803d55;
+}
+.bar button b {
+  white-space: nowrap;
+}
+.bar button:disabled {
+  background: #8c97a6;
+  box-shadow: none;
+}
+.bar button:disabled b {
+  display: none;
+}
+.bar button span {
+  text-align: left;
+  line-height: 1.2;
+}
+.bar button span small {
+  display: block;
+  font-size: 14px;
+  opacity: 0.95;
+}
+/* ---- lembar pesanan ---- */
+.sheet {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 40;
+  background: var(--bg);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.sh-hd {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--pri);
+  color: #fff;
+  padding: 12px 14px;
+}
+.sh-hd button {
+  border: 0;
+  background: #ffffff2b;
+  color: #fff;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-weight: 700;
+  font-size: 17px;
+}
+.sh-hd b {
+  font-size: 20px;
+  flex: 1;
+}
+.card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 14px;
+  margin: 12px;
+  box-shadow: 0 1px 3px #0002;
+}
+.card h2 {
+  font-size: 19px;
+  margin: 0 0 8px;
+}
+.li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+.li:last-of-type {
+  border-bottom: 0;
+}
+.li .nm {
+  flex: 1;
+  min-width: 0;
+}
+.li .nm b {
+  display: block;
+  font-size: 16px;
+  line-height: 1.25;
+}
+.li .nm small {
+  color: var(--muted);
+  font-size: 14px;
+}
+.li .step {
+  flex: none;
+  width: 158px;
+  min-height: 56px;
+}
+.li .step > button:not(.sq) {
+  width: 42px;
+  height: 42px;
+  font-size: 22px;
+}
+.tot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  padding-top: 10px;
+  border-top: 2px solid var(--line);
+  margin-top: 4px;
+}
+.tot small {
+  display: block;
+  font-size: 13px;
+  color: var(--muted);
+}
+.tot b {
+  font-size: 24px;
+  white-space: nowrap;
+}
+.note {
+  font-size: 15px;
+  color: var(--muted);
+  margin: 8px 0 0;
+}
+.besar {
+  font-size: 18px;
+  margin: 4px 0 4px;
+}
+label {
+  display: block;
+  font-size: 16px;
+  color: var(--ink);
+  font-weight: 700;
+  margin: 14px 0 6px;
+}
+.wajib {
+  color: var(--bad);
+  font-weight: 600;
+  font-size: 14px;
+}
+.seg2 {
+  display: flex;
+  gap: 8px;
+}
+.seg2 button {
+  flex: 1;
+  border: 2px solid #b9c4d3;
+  background: #fff;
+  border-radius: 12px;
+  padding: 12px 8px;
+  min-height: 56px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.seg2 button.on {
+  border-color: var(--pri);
+  background: var(--soft);
+  color: var(--pri);
+}
+.btn {
+  display: block;
+  width: 100%;
+  border: 0;
+  border-radius: 14px;
+  padding: 16px;
+  min-height: 58px;
+  font-size: 18px;
+  font-weight: 800;
+  margin-top: 10px;
+  background: var(--soft);
+  color: var(--pri);
+  text-align: center;
+  text-decoration: none;
+}
+.btn.biru {
+  background: var(--pri);
+  color: #fff;
+}
+.btn.wa {
+  background: var(--ok);
+  color: #fff;
+  font-size: 19px;
+}
+.btn.besar {
+  min-height: 68px;
+  font-size: 20px;
+}
+.btn.lite {
+  background: #f1f3f6;
+  color: #3b4554;
+  font-size: 16px;
+  padding: 12px;
+  min-height: 50px;
+}
+.btn.merah {
+  background: var(--bad);
+  color: #fff;
+}
+.btn.hapus {
+  background: none;
+  color: var(--bad);
+  font-size: 16px;
+  min-height: 48px;
+}
+.kecil2 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+.kecil2 .btn {
+  flex: 1 1 130px;
+  margin-top: 0;
+}
+.done {
+  background: var(--ok-bg);
+  border: 3px solid var(--ok);
+}
+.intip {
+  margin-top: 12px;
+  font-size: 16px;
+}
+.intip summary {
+  cursor: pointer;
+  color: var(--pri);
+  font-weight: 700;
+  padding: 6px 0;
+}
+.intip pre {
+  white-space: pre-wrap;
+  word-break: break-word;
+  background: #f6f8fa;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px;
+  font-family: inherit;
+  font-size: 15px;
+  margin: 6px 0 0;
+}
+.qrbox {
+  text-align: center;
+}
+.qrbox img {
+  width: 100%;
+  max-width: 340px;
+  image-rendering: pixelated;
+}
+/* ---- jendela kecil ---- */
+.dlg-bg {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 70;
+  background: #0008;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.dlg {
+  background: #fff;
+  border-radius: 18px;
+  padding: 18px;
+  width: 100%;
+  max-width: 420px;
+  max-height: 90vh;
+  overflow: auto;
+}
+.dlg h3 {
+  margin: 0 0 6px;
+  font-size: 19px;
+  line-height: 1.3;
+}
+.dlg-p {
+  font-size: 18px;
+  margin: 4px 0 10px;
+}
+.dlg-q {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.dlg-q button {
+  flex: none;
+  width: 64px;
+  height: 64px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--ok);
+  color: #fff;
+  font-size: 30px;
+  font-weight: 800;
+}
+.dlg-q input {
+  text-align: center;
+  font-size: 28px;
+  font-weight: 800;
+  min-height: 64px;
+}
+.dlg-b {
+  display: flex;
+  gap: 8px;
+}
+.dlg-b .btn {
+  flex: 1;
+}
+.dlg textarea.salin {
+  font-size: 15px;
+}
+#toast {
+  position: fixed;
+  left: 50%;
+  bottom: 100px;
+  transform: translateX(-50%);
+  z-index: 80;
+  background: #16202c;
+  color: #fff;
+  padding: 12px 18px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 17px;
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+  max-width: 92vw;
+  text-align: center;
+}
+#toast.on {
+  opacity: 1;
+}
+#toast.bad {
+  background: var(--bad);
+}
+.foot {
+  text-align: center;
+  font-size: 14px;
+  color: var(--muted);
+  padding: 4px 12px 24px;
+}
+@media (min-width: 760px) {
+  .hd {
+    padding-top: 18px;
+  }
+}
+
+</style>
+</head>
+<body>
+<div id="app"><div class="loading">Memuat daftar barang…</div></div>
+<script>//---------------------------------------------------------------------
+//
+// QR Code Generator for JavaScript
+//
+// Copyright (c) 2009 Kazuhiko Arase
+//
+// URL: http://www.d-project.com/
+//
+// Licensed under the MIT license:
+//  http://www.opensource.org/licenses/mit-license.php
+//
+// The word 'QR Code' is registered trademark of
+// DENSO WAVE INCORPORATED
+//  http://www.denso-wave.com/qrcode/faqpatent-e.html
+//
+//---------------------------------------------------------------------
+
+var qrcode = function() {
+
+  //---------------------------------------------------------------------
+  // qrcode
+  //---------------------------------------------------------------------
+
+  /**
+   * qrcode
+   * @param typeNumber 1 to 40
+   * @param errorCorrectionLevel 'L','M','Q','H'
+   */
+  var qrcode = function(typeNumber, errorCorrectionLevel) {
+
+    var PAD0 = 0xEC;
+    var PAD1 = 0x11;
+
+    var _typeNumber = typeNumber;
+    var _errorCorrectionLevel = QRErrorCorrectionLevel[errorCorrectionLevel];
+    var _modules = null;
+    var _moduleCount = 0;
+    var _dataCache = null;
+    var _dataList = [];
+
+    var _this = {};
+
+    var makeImpl = function(test, maskPattern) {
+
+      _moduleCount = _typeNumber * 4 + 17;
+      _modules = function(moduleCount) {
+        var modules = new Array(moduleCount);
+        for (var row = 0; row < moduleCount; row += 1) {
+          modules[row] = new Array(moduleCount);
+          for (var col = 0; col < moduleCount; col += 1) {
+            modules[row][col] = null;
+          }
+        }
+        return modules;
+      }(_moduleCount);
+
+      setupPositionProbePattern(0, 0);
+      setupPositionProbePattern(_moduleCount - 7, 0);
+      setupPositionProbePattern(0, _moduleCount - 7);
+      setupPositionAdjustPattern();
+      setupTimingPattern();
+      setupTypeInfo(test, maskPattern);
+
+      if (_typeNumber >= 7) {
+        setupTypeNumber(test);
+      }
+
+      if (_dataCache == null) {
+        _dataCache = createData(_typeNumber, _errorCorrectionLevel, _dataList);
+      }
+
+      mapData(_dataCache, maskPattern);
+    };
+
+    var setupPositionProbePattern = function(row, col) {
+
+      for (var r = -1; r <= 7; r += 1) {
+
+        if (row + r <= -1 || _moduleCount <= row + r) continue;
+
+        for (var c = -1; c <= 7; c += 1) {
+
+          if (col + c <= -1 || _moduleCount <= col + c) continue;
+
+          if ( (0 <= r && r <= 6 && (c == 0 || c == 6) )
+              || (0 <= c && c <= 6 && (r == 0 || r == 6) )
+              || (2 <= r && r <= 4 && 2 <= c && c <= 4) ) {
+            _modules[row + r][col + c] = true;
+          } else {
+            _modules[row + r][col + c] = false;
+          }
+        }
+      }
+    };
+
+    var getBestMaskPattern = function() {
+
+      var minLostPoint = 0;
+      var pattern = 0;
+
+      for (var i = 0; i < 8; i += 1) {
+
+        makeImpl(true, i);
+
+        var lostPoint = QRUtil.getLostPoint(_this);
+
+        if (i == 0 || minLostPoint > lostPoint) {
+          minLostPoint = lostPoint;
+          pattern = i;
+        }
+      }
+
+      return pattern;
+    };
+
+    var setupTimingPattern = function() {
+
+      for (var r = 8; r < _moduleCount - 8; r += 1) {
+        if (_modules[r][6] != null) {
+          continue;
+        }
+        _modules[r][6] = (r % 2 == 0);
+      }
+
+      for (var c = 8; c < _moduleCount - 8; c += 1) {
+        if (_modules[6][c] != null) {
+          continue;
+        }
+        _modules[6][c] = (c % 2 == 0);
+      }
+    };
+
+    var setupPositionAdjustPattern = function() {
+
+      var pos = QRUtil.getPatternPosition(_typeNumber);
+
+      for (var i = 0; i < pos.length; i += 1) {
+
+        for (var j = 0; j < pos.length; j += 1) {
+
+          var row = pos[i];
+          var col = pos[j];
+
+          if (_modules[row][col] != null) {
+            continue;
+          }
+
+          for (var r = -2; r <= 2; r += 1) {
+
+            for (var c = -2; c <= 2; c += 1) {
+
+              if (r == -2 || r == 2 || c == -2 || c == 2
+                  || (r == 0 && c == 0) ) {
+                _modules[row + r][col + c] = true;
+              } else {
+                _modules[row + r][col + c] = false;
+              }
+            }
+          }
+        }
+      }
+    };
+
+    var setupTypeNumber = function(test) {
+
+      var bits = QRUtil.getBCHTypeNumber(_typeNumber);
+
+      for (var i = 0; i < 18; i += 1) {
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+        _modules[Math.floor(i / 3)][i % 3 + _moduleCount - 8 - 3] = mod;
+      }
+
+      for (var i = 0; i < 18; i += 1) {
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+        _modules[i % 3 + _moduleCount - 8 - 3][Math.floor(i / 3)] = mod;
+      }
+    };
+
+    var setupTypeInfo = function(test, maskPattern) {
+
+      var data = (_errorCorrectionLevel << 3) | maskPattern;
+      var bits = QRUtil.getBCHTypeInfo(data);
+
+      // vertical
+      for (var i = 0; i < 15; i += 1) {
+
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+
+        if (i < 6) {
+          _modules[i][8] = mod;
+        } else if (i < 8) {
+          _modules[i + 1][8] = mod;
+        } else {
+          _modules[_moduleCount - 15 + i][8] = mod;
+        }
+      }
+
+      // horizontal
+      for (var i = 0; i < 15; i += 1) {
+
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+
+        if (i < 8) {
+          _modules[8][_moduleCount - i - 1] = mod;
+        } else if (i < 9) {
+          _modules[8][15 - i - 1 + 1] = mod;
+        } else {
+          _modules[8][15 - i - 1] = mod;
+        }
+      }
+
+      // fixed module
+      _modules[_moduleCount - 8][8] = (!test);
+    };
+
+    var mapData = function(data, maskPattern) {
+
+      var inc = -1;
+      var row = _moduleCount - 1;
+      var bitIndex = 7;
+      var byteIndex = 0;
+      var maskFunc = QRUtil.getMaskFunction(maskPattern);
+
+      for (var col = _moduleCount - 1; col > 0; col -= 2) {
+
+        if (col == 6) col -= 1;
+
+        while (true) {
+
+          for (var c = 0; c < 2; c += 1) {
+
+            if (_modules[row][col - c] == null) {
+
+              var dark = false;
+
+              if (byteIndex < data.length) {
+                dark = ( ( (data[byteIndex] >>> bitIndex) & 1) == 1);
+              }
+
+              var mask = maskFunc(row, col - c);
+
+              if (mask) {
+                dark = !dark;
+              }
+
+              _modules[row][col - c] = dark;
+              bitIndex -= 1;
+
+              if (bitIndex == -1) {
+                byteIndex += 1;
+                bitIndex = 7;
+              }
+            }
+          }
+
+          row += inc;
+
+          if (row < 0 || _moduleCount <= row) {
+            row -= inc;
+            inc = -inc;
+            break;
+          }
+        }
+      }
+    };
+
+    var createBytes = function(buffer, rsBlocks) {
+
+      var offset = 0;
+
+      var maxDcCount = 0;
+      var maxEcCount = 0;
+
+      var dcdata = new Array(rsBlocks.length);
+      var ecdata = new Array(rsBlocks.length);
+
+      for (var r = 0; r < rsBlocks.length; r += 1) {
+
+        var dcCount = rsBlocks[r].dataCount;
+        var ecCount = rsBlocks[r].totalCount - dcCount;
+
+        maxDcCount = Math.max(maxDcCount, dcCount);
+        maxEcCount = Math.max(maxEcCount, ecCount);
+
+        dcdata[r] = new Array(dcCount);
+
+        for (var i = 0; i < dcdata[r].length; i += 1) {
+          dcdata[r][i] = 0xff & buffer.getBuffer()[i + offset];
+        }
+        offset += dcCount;
+
+        var rsPoly = QRUtil.getErrorCorrectPolynomial(ecCount);
+        var rawPoly = qrPolynomial(dcdata[r], rsPoly.getLength() - 1);
+
+        var modPoly = rawPoly.mod(rsPoly);
+        ecdata[r] = new Array(rsPoly.getLength() - 1);
+        for (var i = 0; i < ecdata[r].length; i += 1) {
+          var modIndex = i + modPoly.getLength() - ecdata[r].length;
+          ecdata[r][i] = (modIndex >= 0)? modPoly.getAt(modIndex) : 0;
+        }
+      }
+
+      var totalCodeCount = 0;
+      for (var i = 0; i < rsBlocks.length; i += 1) {
+        totalCodeCount += rsBlocks[i].totalCount;
+      }
+
+      var data = new Array(totalCodeCount);
+      var index = 0;
+
+      for (var i = 0; i < maxDcCount; i += 1) {
+        for (var r = 0; r < rsBlocks.length; r += 1) {
+          if (i < dcdata[r].length) {
+            data[index] = dcdata[r][i];
+            index += 1;
+          }
+        }
+      }
+
+      for (var i = 0; i < maxEcCount; i += 1) {
+        for (var r = 0; r < rsBlocks.length; r += 1) {
+          if (i < ecdata[r].length) {
+            data[index] = ecdata[r][i];
+            index += 1;
+          }
+        }
+      }
+
+      return data;
+    };
+
+    var createData = function(typeNumber, errorCorrectionLevel, dataList) {
+
+      var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, errorCorrectionLevel);
+
+      var buffer = qrBitBuffer();
+
+      for (var i = 0; i < dataList.length; i += 1) {
+        var data = dataList[i];
+        buffer.put(data.getMode(), 4);
+        buffer.put(data.getLength(), QRUtil.getLengthInBits(data.getMode(), typeNumber) );
+        data.write(buffer);
+      }
+
+      // calc num max data.
+      var totalDataCount = 0;
+      for (var i = 0; i < rsBlocks.length; i += 1) {
+        totalDataCount += rsBlocks[i].dataCount;
+      }
+
+      if (buffer.getLengthInBits() > totalDataCount * 8) {
+        throw 'code length overflow. ('
+          + buffer.getLengthInBits()
+          + '>'
+          + totalDataCount * 8
+          + ')';
+      }
+
+      // end code
+      if (buffer.getLengthInBits() + 4 <= totalDataCount * 8) {
+        buffer.put(0, 4);
+      }
+
+      // padding
+      while (buffer.getLengthInBits() % 8 != 0) {
+        buffer.putBit(false);
+      }
+
+      // padding
+      while (true) {
+
+        if (buffer.getLengthInBits() >= totalDataCount * 8) {
+          break;
+        }
+        buffer.put(PAD0, 8);
+
+        if (buffer.getLengthInBits() >= totalDataCount * 8) {
+          break;
+        }
+        buffer.put(PAD1, 8);
+      }
+
+      return createBytes(buffer, rsBlocks);
+    };
+
+    _this.addData = function(data, mode) {
+
+      mode = mode || 'Byte';
+
+      var newData = null;
+
+      switch(mode) {
+      case 'Numeric' :
+        newData = qrNumber(data);
+        break;
+      case 'Alphanumeric' :
+        newData = qrAlphaNum(data);
+        break;
+      case 'Byte' :
+        newData = qr8BitByte(data);
+        break;
+      case 'Kanji' :
+        newData = qrKanji(data);
+        break;
+      default :
+        throw 'mode:' + mode;
+      }
+
+      _dataList.push(newData);
+      _dataCache = null;
+    };
+
+    _this.isDark = function(row, col) {
+      if (row < 0 || _moduleCount <= row || col < 0 || _moduleCount <= col) {
+        throw row + ',' + col;
+      }
+      return _modules[row][col];
+    };
+
+    _this.getModuleCount = function() {
+      return _moduleCount;
+    };
+
+    _this.make = function() {
+      if (_typeNumber < 1) {
+        var typeNumber = 1;
+
+        for (; typeNumber < 40; typeNumber++) {
+          var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, _errorCorrectionLevel);
+          var buffer = qrBitBuffer();
+
+          for (var i = 0; i < _dataList.length; i++) {
+            var data = _dataList[i];
+            buffer.put(data.getMode(), 4);
+            buffer.put(data.getLength(), QRUtil.getLengthInBits(data.getMode(), typeNumber) );
+            data.write(buffer);
+          }
+
+          var totalDataCount = 0;
+          for (var i = 0; i < rsBlocks.length; i++) {
+            totalDataCount += rsBlocks[i].dataCount;
+          }
+
+          if (buffer.getLengthInBits() <= totalDataCount * 8) {
+            break;
+          }
+        }
+
+        _typeNumber = typeNumber;
+      }
+
+      makeImpl(false, getBestMaskPattern() );
+    };
+
+    _this.createTableTag = function(cellSize, margin) {
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      var qrHtml = '';
+
+      qrHtml += '<table style="';
+      qrHtml += ' border-width: 0px; border-style: none;';
+      qrHtml += ' border-collapse: collapse;';
+      qrHtml += ' padding: 0px; margin: ' + margin + 'px;';
+      qrHtml += '">';
+      qrHtml += '<tbody>';
+
+      for (var r = 0; r < _this.getModuleCount(); r += 1) {
+
+        qrHtml += '<tr>';
+
+        for (var c = 0; c < _this.getModuleCount(); c += 1) {
+          qrHtml += '<td style="';
+          qrHtml += ' border-width: 0px; border-style: none;';
+          qrHtml += ' border-collapse: collapse;';
+          qrHtml += ' padding: 0px; margin: 0px;';
+          qrHtml += ' width: ' + cellSize + 'px;';
+          qrHtml += ' height: ' + cellSize + 'px;';
+          qrHtml += ' background-color: ';
+          qrHtml += _this.isDark(r, c)? '#000000' : '#ffffff';
+          qrHtml += ';';
+          qrHtml += '"/>';
+        }
+
+        qrHtml += '</tr>';
+      }
+
+      qrHtml += '</tbody>';
+      qrHtml += '</table>';
+
+      return qrHtml;
+    };
+
+    _this.createSvgTag = function(cellSize, margin, alt, title) {
+
+      var opts = {};
+      if (typeof arguments[0] == 'object') {
+        // Called by options.
+        opts = arguments[0];
+        // overwrite cellSize and margin.
+        cellSize = opts.cellSize;
+        margin = opts.margin;
+        alt = opts.alt;
+        title = opts.title;
+      }
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      // Compose alt property surrogate
+      alt = (typeof alt === 'string') ? {text: alt} : alt || {};
+      alt.text = alt.text || null;
+      alt.id = (alt.text) ? alt.id || 'qrcode-description' : null;
+
+      // Compose title property surrogate
+      title = (typeof title === 'string') ? {text: title} : title || {};
+      title.text = title.text || null;
+      title.id = (title.text) ? title.id || 'qrcode-title' : null;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var c, mc, r, mr, qrSvg='', rect;
+
+      rect = 'l' + cellSize + ',0 0,' + cellSize +
+        ' -' + cellSize + ',0 0,-' + cellSize + 'z ';
+
+      qrSvg += '<svg version="1.1" xmlns="http://www.w3.org/2000/svg"';
+      qrSvg += !opts.scalable ? ' width="' + size + 'px" height="' + size + 'px"' : '';
+      qrSvg += ' viewBox="0 0 ' + size + ' ' + size + '" ';
+      qrSvg += ' preserveAspectRatio="xMinYMin meet"';
+      qrSvg += (title.text || alt.text) ? ' role="img" aria-labelledby="' +
+          escapeXml([title.id, alt.id].join(' ').trim() ) + '"' : '';
+      qrSvg += '>';
+      qrSvg += (title.text) ? '<title id="' + escapeXml(title.id) + '">' +
+          escapeXml(title.text) + '</title>' : '';
+      qrSvg += (alt.text) ? '<description id="' + escapeXml(alt.id) + '">' +
+          escapeXml(alt.text) + '</description>' : '';
+      qrSvg += '<rect width="100%" height="100%" fill="white" cx="0" cy="0"/>';
+      qrSvg += '<path d="';
+
+      for (r = 0; r < _this.getModuleCount(); r += 1) {
+        mr = r * cellSize + margin;
+        for (c = 0; c < _this.getModuleCount(); c += 1) {
+          if (_this.isDark(r, c) ) {
+            mc = c*cellSize+margin;
+            qrSvg += 'M' + mc + ',' + mr + rect;
+          }
+        }
+      }
+
+      qrSvg += '" stroke="transparent" fill="black"/>';
+      qrSvg += '</svg>';
+
+      return qrSvg;
+    };
+
+    _this.createDataURL = function(cellSize, margin) {
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var min = margin;
+      var max = size - margin;
+
+      return createDataURL(size, size, function(x, y) {
+        if (min <= x && x < max && min <= y && y < max) {
+          var c = Math.floor( (x - min) / cellSize);
+          var r = Math.floor( (y - min) / cellSize);
+          return _this.isDark(r, c)? 0 : 1;
+        } else {
+          return 1;
+        }
+      } );
+    };
+
+    _this.createImgTag = function(cellSize, margin, alt) {
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+
+      var img = '';
+      img += '<img';
+      img += '\u0020src="';
+      img += _this.createDataURL(cellSize, margin);
+      img += '"';
+      img += '\u0020width="';
+      img += size;
+      img += '"';
+      img += '\u0020height="';
+      img += size;
+      img += '"';
+      if (alt) {
+        img += '\u0020alt="';
+        img += escapeXml(alt);
+        img += '"';
+      }
+      img += '/>';
+
+      return img;
+    };
+
+    var escapeXml = function(s) {
+      var escaped = '';
+      for (var i = 0; i < s.length; i += 1) {
+        var c = s.charAt(i);
+        switch(c) {
+        case '<': escaped += '&lt;'; break;
+        case '>': escaped += '&gt;'; break;
+        case '&': escaped += '&amp;'; break;
+        case '"': escaped += '&quot;'; break;
+        default : escaped += c; break;
+        }
+      }
+      return escaped;
+    };
+
+    var _createHalfASCII = function(margin) {
+      var cellSize = 1;
+      margin = (typeof margin == 'undefined')? cellSize * 2 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var min = margin;
+      var max = size - margin;
+
+      var y, x, r1, r2, p;
+
+      var blocks = {
+        '██': '█',
+        '█ ': '▀',
+        ' █': '▄',
+        '  ': ' '
+      };
+
+      var blocksLastLineNoMargin = {
+        '██': '▀',
+        '█ ': '▀',
+        ' █': ' ',
+        '  ': ' '
+      };
+
+      var ascii = '';
+      for (y = 0; y < size; y += 2) {
+        r1 = Math.floor((y - min) / cellSize);
+        r2 = Math.floor((y + 1 - min) / cellSize);
+        for (x = 0; x < size; x += 1) {
+          p = '█';
+
+          if (min <= x && x < max && min <= y && y < max && _this.isDark(r1, Math.floor((x - min) / cellSize))) {
+            p = ' ';
+          }
+
+          if (min <= x && x < max && min <= y+1 && y+1 < max && _this.isDark(r2, Math.floor((x - min) / cellSize))) {
+            p += ' ';
+          }
+          else {
+            p += '█';
+          }
+
+          // Output 2 characters per pixel, to create full square. 1 character per pixels gives only half width of square.
+          ascii += (margin < 1 && y+1 >= max) ? blocksLastLineNoMargin[p] : blocks[p];
+        }
+
+        ascii += '\n';
+      }
+
+      if (size % 2 && margin > 0) {
+        return ascii.substring(0, ascii.length - size - 1) + Array(size+1).join('▀');
+      }
+
+      return ascii.substring(0, ascii.length-1);
+    };
+
+    _this.createASCII = function(cellSize, margin) {
+      cellSize = cellSize || 1;
+
+      if (cellSize < 2) {
+        return _createHalfASCII(margin);
+      }
+
+      cellSize -= 1;
+      margin = (typeof margin == 'undefined')? cellSize * 2 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var min = margin;
+      var max = size - margin;
+
+      var y, x, r, p;
+
+      var white = Array(cellSize+1).join('██');
+      var black = Array(cellSize+1).join('  ');
+
+      var ascii = '';
+      var line = '';
+      for (y = 0; y < size; y += 1) {
+        r = Math.floor( (y - min) / cellSize);
+        line = '';
+        for (x = 0; x < size; x += 1) {
+          p = 1;
+
+          if (min <= x && x < max && min <= y && y < max && _this.isDark(r, Math.floor((x - min) / cellSize))) {
+            p = 0;
+          }
+
+          // Output 2 characters per pixel, to create full square. 1 character per pixels gives only half width of square.
+          line += p ? white : black;
+        }
+
+        for (r = 0; r < cellSize; r += 1) {
+          ascii += line + '\n';
+        }
+      }
+
+      return ascii.substring(0, ascii.length-1);
+    };
+
+    _this.renderTo2dContext = function(context, cellSize) {
+      cellSize = cellSize || 2;
+      var length = _this.getModuleCount();
+      for (var row = 0; row < length; row++) {
+        for (var col = 0; col < length; col++) {
+          context.fillStyle = _this.isDark(row, col) ? 'black' : 'white';
+          context.fillRect(col * cellSize, row * cellSize, cellSize, cellSize);
+        }
+      }
+    }
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrcode.stringToBytes
+  //---------------------------------------------------------------------
+
+  qrcode.stringToBytesFuncs = {
+    'default' : function(s) {
+      var bytes = [];
+      for (var i = 0; i < s.length; i += 1) {
+        var c = s.charCodeAt(i);
+        bytes.push(c & 0xff);
+      }
+      return bytes;
+    }
+  };
+
+  qrcode.stringToBytes = qrcode.stringToBytesFuncs['default'];
+
+  //---------------------------------------------------------------------
+  // qrcode.createStringToBytes
+  //---------------------------------------------------------------------
+
+  /**
+   * @param unicodeData base64 string of byte array.
+   * [16bit Unicode],[16bit Bytes], ...
+   * @param numChars
+   */
+  qrcode.createStringToBytes = function(unicodeData, numChars) {
+
+    // create conversion map.
+
+    var unicodeMap = function() {
+
+      var bin = base64DecodeInputStream(unicodeData);
+      var read = function() {
+        var b = bin.read();
+        if (b == -1) throw 'eof';
+        return b;
+      };
+
+      var count = 0;
+      var unicodeMap = {};
+      while (true) {
+        var b0 = bin.read();
+        if (b0 == -1) break;
+        var b1 = read();
+        var b2 = read();
+        var b3 = read();
+        var k = String.fromCharCode( (b0 << 8) | b1);
+        var v = (b2 << 8) | b3;
+        unicodeMap[k] = v;
+        count += 1;
+      }
+      if (count != numChars) {
+        throw count + ' != ' + numChars;
+      }
+
+      return unicodeMap;
+    }();
+
+    var unknownChar = '?'.charCodeAt(0);
+
+    return function(s) {
+      var bytes = [];
+      for (var i = 0; i < s.length; i += 1) {
+        var c = s.charCodeAt(i);
+        if (c < 128) {
+          bytes.push(c);
+        } else {
+          var b = unicodeMap[s.charAt(i)];
+          if (typeof b == 'number') {
+            if ( (b & 0xff) == b) {
+              // 1byte
+              bytes.push(b);
+            } else {
+              // 2bytes
+              bytes.push(b >>> 8);
+              bytes.push(b & 0xff);
+            }
+          } else {
+            bytes.push(unknownChar);
+          }
+        }
+      }
+      return bytes;
+    };
+  };
+
+  //---------------------------------------------------------------------
+  // QRMode
+  //---------------------------------------------------------------------
+
+  var QRMode = {
+    MODE_NUMBER :    1 << 0,
+    MODE_ALPHA_NUM : 1 << 1,
+    MODE_8BIT_BYTE : 1 << 2,
+    MODE_KANJI :     1 << 3
+  };
+
+  //---------------------------------------------------------------------
+  // QRErrorCorrectionLevel
+  //---------------------------------------------------------------------
+
+  var QRErrorCorrectionLevel = {
+    L : 1,
+    M : 0,
+    Q : 3,
+    H : 2
+  };
+
+  //---------------------------------------------------------------------
+  // QRMaskPattern
+  //---------------------------------------------------------------------
+
+  var QRMaskPattern = {
+    PATTERN000 : 0,
+    PATTERN001 : 1,
+    PATTERN010 : 2,
+    PATTERN011 : 3,
+    PATTERN100 : 4,
+    PATTERN101 : 5,
+    PATTERN110 : 6,
+    PATTERN111 : 7
+  };
+
+  //---------------------------------------------------------------------
+  // QRUtil
+  //---------------------------------------------------------------------
+
+  var QRUtil = function() {
+
+    var PATTERN_POSITION_TABLE = [
+      [],
+      [6, 18],
+      [6, 22],
+      [6, 26],
+      [6, 30],
+      [6, 34],
+      [6, 22, 38],
+      [6, 24, 42],
+      [6, 26, 46],
+      [6, 28, 50],
+      [6, 30, 54],
+      [6, 32, 58],
+      [6, 34, 62],
+      [6, 26, 46, 66],
+      [6, 26, 48, 70],
+      [6, 26, 50, 74],
+      [6, 30, 54, 78],
+      [6, 30, 56, 82],
+      [6, 30, 58, 86],
+      [6, 34, 62, 90],
+      [6, 28, 50, 72, 94],
+      [6, 26, 50, 74, 98],
+      [6, 30, 54, 78, 102],
+      [6, 28, 54, 80, 106],
+      [6, 32, 58, 84, 110],
+      [6, 30, 58, 86, 114],
+      [6, 34, 62, 90, 118],
+      [6, 26, 50, 74, 98, 122],
+      [6, 30, 54, 78, 102, 126],
+      [6, 26, 52, 78, 104, 130],
+      [6, 30, 56, 82, 108, 134],
+      [6, 34, 60, 86, 112, 138],
+      [6, 30, 58, 86, 114, 142],
+      [6, 34, 62, 90, 118, 146],
+      [6, 30, 54, 78, 102, 126, 150],
+      [6, 24, 50, 76, 102, 128, 154],
+      [6, 28, 54, 80, 106, 132, 158],
+      [6, 32, 58, 84, 110, 136, 162],
+      [6, 26, 54, 82, 110, 138, 166],
+      [6, 30, 58, 86, 114, 142, 170]
+    ];
+    var G15 = (1 << 10) | (1 << 8) | (1 << 5) | (1 << 4) | (1 << 2) | (1 << 1) | (1 << 0);
+    var G18 = (1 << 12) | (1 << 11) | (1 << 10) | (1 << 9) | (1 << 8) | (1 << 5) | (1 << 2) | (1 << 0);
+    var G15_MASK = (1 << 14) | (1 << 12) | (1 << 10) | (1 << 4) | (1 << 1);
+
+    var _this = {};
+
+    var getBCHDigit = function(data) {
+      var digit = 0;
+      while (data != 0) {
+        digit += 1;
+        data >>>= 1;
+      }
+      return digit;
+    };
+
+    _this.getBCHTypeInfo = function(data) {
+      var d = data << 10;
+      while (getBCHDigit(d) - getBCHDigit(G15) >= 0) {
+        d ^= (G15 << (getBCHDigit(d) - getBCHDigit(G15) ) );
+      }
+      return ( (data << 10) | d) ^ G15_MASK;
+    };
+
+    _this.getBCHTypeNumber = function(data) {
+      var d = data << 12;
+      while (getBCHDigit(d) - getBCHDigit(G18) >= 0) {
+        d ^= (G18 << (getBCHDigit(d) - getBCHDigit(G18) ) );
+      }
+      return (data << 12) | d;
+    };
+
+    _this.getPatternPosition = function(typeNumber) {
+      return PATTERN_POSITION_TABLE[typeNumber - 1];
+    };
+
+    _this.getMaskFunction = function(maskPattern) {
+
+      switch (maskPattern) {
+
+      case QRMaskPattern.PATTERN000 :
+        return function(i, j) { return (i + j) % 2 == 0; };
+      case QRMaskPattern.PATTERN001 :
+        return function(i, j) { return i % 2 == 0; };
+      case QRMaskPattern.PATTERN010 :
+        return function(i, j) { return j % 3 == 0; };
+      case QRMaskPattern.PATTERN011 :
+        return function(i, j) { return (i + j) % 3 == 0; };
+      case QRMaskPattern.PATTERN100 :
+        return function(i, j) { return (Math.floor(i / 2) + Math.floor(j / 3) ) % 2 == 0; };
+      case QRMaskPattern.PATTERN101 :
+        return function(i, j) { return (i * j) % 2 + (i * j) % 3 == 0; };
+      case QRMaskPattern.PATTERN110 :
+        return function(i, j) { return ( (i * j) % 2 + (i * j) % 3) % 2 == 0; };
+      case QRMaskPattern.PATTERN111 :
+        return function(i, j) { return ( (i * j) % 3 + (i + j) % 2) % 2 == 0; };
+
+      default :
+        throw 'bad maskPattern:' + maskPattern;
+      }
+    };
+
+    _this.getErrorCorrectPolynomial = function(errorCorrectLength) {
+      var a = qrPolynomial([1], 0);
+      for (var i = 0; i < errorCorrectLength; i += 1) {
+        a = a.multiply(qrPolynomial([1, QRMath.gexp(i)], 0) );
+      }
+      return a;
+    };
+
+    _this.getLengthInBits = function(mode, type) {
+
+      if (1 <= type && type < 10) {
+
+        // 1 - 9
+
+        switch(mode) {
+        case QRMode.MODE_NUMBER    : return 10;
+        case QRMode.MODE_ALPHA_NUM : return 9;
+        case QRMode.MODE_8BIT_BYTE : return 8;
+        case QRMode.MODE_KANJI     : return 8;
+        default :
+          throw 'mode:' + mode;
+        }
+
+      } else if (type < 27) {
+
+        // 10 - 26
+
+        switch(mode) {
+        case QRMode.MODE_NUMBER    : return 12;
+        case QRMode.MODE_ALPHA_NUM : return 11;
+        case QRMode.MODE_8BIT_BYTE : return 16;
+        case QRMode.MODE_KANJI     : return 10;
+        default :
+          throw 'mode:' + mode;
+        }
+
+      } else if (type < 41) {
+
+        // 27 - 40
+
+        switch(mode) {
+        case QRMode.MODE_NUMBER    : return 14;
+        case QRMode.MODE_ALPHA_NUM : return 13;
+        case QRMode.MODE_8BIT_BYTE : return 16;
+        case QRMode.MODE_KANJI     : return 12;
+        default :
+          throw 'mode:' + mode;
+        }
+
+      } else {
+        throw 'type:' + type;
+      }
+    };
+
+    _this.getLostPoint = function(qrcode) {
+
+      var moduleCount = qrcode.getModuleCount();
+
+      var lostPoint = 0;
+
+      // LEVEL1
+
+      for (var row = 0; row < moduleCount; row += 1) {
+        for (var col = 0; col < moduleCount; col += 1) {
+
+          var sameCount = 0;
+          var dark = qrcode.isDark(row, col);
+
+          for (var r = -1; r <= 1; r += 1) {
+
+            if (row + r < 0 || moduleCount <= row + r) {
+              continue;
+            }
+
+            for (var c = -1; c <= 1; c += 1) {
+
+              if (col + c < 0 || moduleCount <= col + c) {
+                continue;
+              }
+
+              if (r == 0 && c == 0) {
+                continue;
+              }
+
+              if (dark == qrcode.isDark(row + r, col + c) ) {
+                sameCount += 1;
+              }
+            }
+          }
+
+          if (sameCount > 5) {
+            lostPoint += (3 + sameCount - 5);
+          }
+        }
+      };
+
+      // LEVEL2
+
+      for (var row = 0; row < moduleCount - 1; row += 1) {
+        for (var col = 0; col < moduleCount - 1; col += 1) {
+          var count = 0;
+          if (qrcode.isDark(row, col) ) count += 1;
+          if (qrcode.isDark(row + 1, col) ) count += 1;
+          if (qrcode.isDark(row, col + 1) ) count += 1;
+          if (qrcode.isDark(row + 1, col + 1) ) count += 1;
+          if (count == 0 || count == 4) {
+            lostPoint += 3;
+          }
+        }
+      }
+
+      // LEVEL3
+
+      for (var row = 0; row < moduleCount; row += 1) {
+        for (var col = 0; col < moduleCount - 6; col += 1) {
+          if (qrcode.isDark(row, col)
+              && !qrcode.isDark(row, col + 1)
+              &&  qrcode.isDark(row, col + 2)
+              &&  qrcode.isDark(row, col + 3)
+              &&  qrcode.isDark(row, col + 4)
+              && !qrcode.isDark(row, col + 5)
+              &&  qrcode.isDark(row, col + 6) ) {
+            lostPoint += 40;
+          }
+        }
+      }
+
+      for (var col = 0; col < moduleCount; col += 1) {
+        for (var row = 0; row < moduleCount - 6; row += 1) {
+          if (qrcode.isDark(row, col)
+              && !qrcode.isDark(row + 1, col)
+              &&  qrcode.isDark(row + 2, col)
+              &&  qrcode.isDark(row + 3, col)
+              &&  qrcode.isDark(row + 4, col)
+              && !qrcode.isDark(row + 5, col)
+              &&  qrcode.isDark(row + 6, col) ) {
+            lostPoint += 40;
+          }
+        }
+      }
+
+      // LEVEL4
+
+      var darkCount = 0;
+
+      for (var col = 0; col < moduleCount; col += 1) {
+        for (var row = 0; row < moduleCount; row += 1) {
+          if (qrcode.isDark(row, col) ) {
+            darkCount += 1;
+          }
+        }
+      }
+
+      var ratio = Math.abs(100 * darkCount / moduleCount / moduleCount - 50) / 5;
+      lostPoint += ratio * 10;
+
+      return lostPoint;
+    };
+
+    return _this;
+  }();
+
+  //---------------------------------------------------------------------
+  // QRMath
+  //---------------------------------------------------------------------
+
+  var QRMath = function() {
+
+    var EXP_TABLE = new Array(256);
+    var LOG_TABLE = new Array(256);
+
+    // initialize tables
+    for (var i = 0; i < 8; i += 1) {
+      EXP_TABLE[i] = 1 << i;
+    }
+    for (var i = 8; i < 256; i += 1) {
+      EXP_TABLE[i] = EXP_TABLE[i - 4]
+        ^ EXP_TABLE[i - 5]
+        ^ EXP_TABLE[i - 6]
+        ^ EXP_TABLE[i - 8];
+    }
+    for (var i = 0; i < 255; i += 1) {
+      LOG_TABLE[EXP_TABLE[i] ] = i;
+    }
+
+    var _this = {};
+
+    _this.glog = function(n) {
+
+      if (n < 1) {
+        throw 'glog(' + n + ')';
+      }
+
+      return LOG_TABLE[n];
+    };
+
+    _this.gexp = function(n) {
+
+      while (n < 0) {
+        n += 255;
+      }
+
+      while (n >= 256) {
+        n -= 255;
+      }
+
+      return EXP_TABLE[n];
+    };
+
+    return _this;
+  }();
+
+  //---------------------------------------------------------------------
+  // qrPolynomial
+  //---------------------------------------------------------------------
+
+  function qrPolynomial(num, shift) {
+
+    if (typeof num.length == 'undefined') {
+      throw num.length + '/' + shift;
+    }
+
+    var _num = function() {
+      var offset = 0;
+      while (offset < num.length && num[offset] == 0) {
+        offset += 1;
+      }
+      var _num = new Array(num.length - offset + shift);
+      for (var i = 0; i < num.length - offset; i += 1) {
+        _num[i] = num[i + offset];
+      }
+      return _num;
+    }();
+
+    var _this = {};
+
+    _this.getAt = function(index) {
+      return _num[index];
+    };
+
+    _this.getLength = function() {
+      return _num.length;
+    };
+
+    _this.multiply = function(e) {
+
+      var num = new Array(_this.getLength() + e.getLength() - 1);
+
+      for (var i = 0; i < _this.getLength(); i += 1) {
+        for (var j = 0; j < e.getLength(); j += 1) {
+          num[i + j] ^= QRMath.gexp(QRMath.glog(_this.getAt(i) ) + QRMath.glog(e.getAt(j) ) );
+        }
+      }
+
+      return qrPolynomial(num, 0);
+    };
+
+    _this.mod = function(e) {
+
+      if (_this.getLength() - e.getLength() < 0) {
+        return _this;
+      }
+
+      var ratio = QRMath.glog(_this.getAt(0) ) - QRMath.glog(e.getAt(0) );
+
+      var num = new Array(_this.getLength() );
+      for (var i = 0; i < _this.getLength(); i += 1) {
+        num[i] = _this.getAt(i);
+      }
+
+      for (var i = 0; i < e.getLength(); i += 1) {
+        num[i] ^= QRMath.gexp(QRMath.glog(e.getAt(i) ) + ratio);
+      }
+
+      // recursive call
+      return qrPolynomial(num, 0).mod(e);
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // QRRSBlock
+  //---------------------------------------------------------------------
+
+  var QRRSBlock = function() {
+
+    var RS_BLOCK_TABLE = [
+
+      // L
+      // M
+      // Q
+      // H
+
+      // 1
+      [1, 26, 19],
+      [1, 26, 16],
+      [1, 26, 13],
+      [1, 26, 9],
+
+      // 2
+      [1, 44, 34],
+      [1, 44, 28],
+      [1, 44, 22],
+      [1, 44, 16],
+
+      // 3
+      [1, 70, 55],
+      [1, 70, 44],
+      [2, 35, 17],
+      [2, 35, 13],
+
+      // 4
+      [1, 100, 80],
+      [2, 50, 32],
+      [2, 50, 24],
+      [4, 25, 9],
+
+      // 5
+      [1, 134, 108],
+      [2, 67, 43],
+      [2, 33, 15, 2, 34, 16],
+      [2, 33, 11, 2, 34, 12],
+
+      // 6
+      [2, 86, 68],
+      [4, 43, 27],
+      [4, 43, 19],
+      [4, 43, 15],
+
+      // 7
+      [2, 98, 78],
+      [4, 49, 31],
+      [2, 32, 14, 4, 33, 15],
+      [4, 39, 13, 1, 40, 14],
+
+      // 8
+      [2, 121, 97],
+      [2, 60, 38, 2, 61, 39],
+      [4, 40, 18, 2, 41, 19],
+      [4, 40, 14, 2, 41, 15],
+
+      // 9
+      [2, 146, 116],
+      [3, 58, 36, 2, 59, 37],
+      [4, 36, 16, 4, 37, 17],
+      [4, 36, 12, 4, 37, 13],
+
+      // 10
+      [2, 86, 68, 2, 87, 69],
+      [4, 69, 43, 1, 70, 44],
+      [6, 43, 19, 2, 44, 20],
+      [6, 43, 15, 2, 44, 16],
+
+      // 11
+      [4, 101, 81],
+      [1, 80, 50, 4, 81, 51],
+      [4, 50, 22, 4, 51, 23],
+      [3, 36, 12, 8, 37, 13],
+
+      // 12
+      [2, 116, 92, 2, 117, 93],
+      [6, 58, 36, 2, 59, 37],
+      [4, 46, 20, 6, 47, 21],
+      [7, 42, 14, 4, 43, 15],
+
+      // 13
+      [4, 133, 107],
+      [8, 59, 37, 1, 60, 38],
+      [8, 44, 20, 4, 45, 21],
+      [12, 33, 11, 4, 34, 12],
+
+      // 14
+      [3, 145, 115, 1, 146, 116],
+      [4, 64, 40, 5, 65, 41],
+      [11, 36, 16, 5, 37, 17],
+      [11, 36, 12, 5, 37, 13],
+
+      // 15
+      [5, 109, 87, 1, 110, 88],
+      [5, 65, 41, 5, 66, 42],
+      [5, 54, 24, 7, 55, 25],
+      [11, 36, 12, 7, 37, 13],
+
+      // 16
+      [5, 122, 98, 1, 123, 99],
+      [7, 73, 45, 3, 74, 46],
+      [15, 43, 19, 2, 44, 20],
+      [3, 45, 15, 13, 46, 16],
+
+      // 17
+      [1, 135, 107, 5, 136, 108],
+      [10, 74, 46, 1, 75, 47],
+      [1, 50, 22, 15, 51, 23],
+      [2, 42, 14, 17, 43, 15],
+
+      // 18
+      [5, 150, 120, 1, 151, 121],
+      [9, 69, 43, 4, 70, 44],
+      [17, 50, 22, 1, 51, 23],
+      [2, 42, 14, 19, 43, 15],
+
+      // 19
+      [3, 141, 113, 4, 142, 114],
+      [3, 70, 44, 11, 71, 45],
+      [17, 47, 21, 4, 48, 22],
+      [9, 39, 13, 16, 40, 14],
+
+      // 20
+      [3, 135, 107, 5, 136, 108],
+      [3, 67, 41, 13, 68, 42],
+      [15, 54, 24, 5, 55, 25],
+      [15, 43, 15, 10, 44, 16],
+
+      // 21
+      [4, 144, 116, 4, 145, 117],
+      [17, 68, 42],
+      [17, 50, 22, 6, 51, 23],
+      [19, 46, 16, 6, 47, 17],
+
+      // 22
+      [2, 139, 111, 7, 140, 112],
+      [17, 74, 46],
+      [7, 54, 24, 16, 55, 25],
+      [34, 37, 13],
+
+      // 23
+      [4, 151, 121, 5, 152, 122],
+      [4, 75, 47, 14, 76, 48],
+      [11, 54, 24, 14, 55, 25],
+      [16, 45, 15, 14, 46, 16],
+
+      // 24
+      [6, 147, 117, 4, 148, 118],
+      [6, 73, 45, 14, 74, 46],
+      [11, 54, 24, 16, 55, 25],
+      [30, 46, 16, 2, 47, 17],
+
+      // 25
+      [8, 132, 106, 4, 133, 107],
+      [8, 75, 47, 13, 76, 48],
+      [7, 54, 24, 22, 55, 25],
+      [22, 45, 15, 13, 46, 16],
+
+      // 26
+      [10, 142, 114, 2, 143, 115],
+      [19, 74, 46, 4, 75, 47],
+      [28, 50, 22, 6, 51, 23],
+      [33, 46, 16, 4, 47, 17],
+
+      // 27
+      [8, 152, 122, 4, 153, 123],
+      [22, 73, 45, 3, 74, 46],
+      [8, 53, 23, 26, 54, 24],
+      [12, 45, 15, 28, 46, 16],
+
+      // 28
+      [3, 147, 117, 10, 148, 118],
+      [3, 73, 45, 23, 74, 46],
+      [4, 54, 24, 31, 55, 25],
+      [11, 45, 15, 31, 46, 16],
+
+      // 29
+      [7, 146, 116, 7, 147, 117],
+      [21, 73, 45, 7, 74, 46],
+      [1, 53, 23, 37, 54, 24],
+      [19, 45, 15, 26, 46, 16],
+
+      // 30
+      [5, 145, 115, 10, 146, 116],
+      [19, 75, 47, 10, 76, 48],
+      [15, 54, 24, 25, 55, 25],
+      [23, 45, 15, 25, 46, 16],
+
+      // 31
+      [13, 145, 115, 3, 146, 116],
+      [2, 74, 46, 29, 75, 47],
+      [42, 54, 24, 1, 55, 25],
+      [23, 45, 15, 28, 46, 16],
+
+      // 32
+      [17, 145, 115],
+      [10, 74, 46, 23, 75, 47],
+      [10, 54, 24, 35, 55, 25],
+      [19, 45, 15, 35, 46, 16],
+
+      // 33
+      [17, 145, 115, 1, 146, 116],
+      [14, 74, 46, 21, 75, 47],
+      [29, 54, 24, 19, 55, 25],
+      [11, 45, 15, 46, 46, 16],
+
+      // 34
+      [13, 145, 115, 6, 146, 116],
+      [14, 74, 46, 23, 75, 47],
+      [44, 54, 24, 7, 55, 25],
+      [59, 46, 16, 1, 47, 17],
+
+      // 35
+      [12, 151, 121, 7, 152, 122],
+      [12, 75, 47, 26, 76, 48],
+      [39, 54, 24, 14, 55, 25],
+      [22, 45, 15, 41, 46, 16],
+
+      // 36
+      [6, 151, 121, 14, 152, 122],
+      [6, 75, 47, 34, 76, 48],
+      [46, 54, 24, 10, 55, 25],
+      [2, 45, 15, 64, 46, 16],
+
+      // 37
+      [17, 152, 122, 4, 153, 123],
+      [29, 74, 46, 14, 75, 47],
+      [49, 54, 24, 10, 55, 25],
+      [24, 45, 15, 46, 46, 16],
+
+      // 38
+      [4, 152, 122, 18, 153, 123],
+      [13, 74, 46, 32, 75, 47],
+      [48, 54, 24, 14, 55, 25],
+      [42, 45, 15, 32, 46, 16],
+
+      // 39
+      [20, 147, 117, 4, 148, 118],
+      [40, 75, 47, 7, 76, 48],
+      [43, 54, 24, 22, 55, 25],
+      [10, 45, 15, 67, 46, 16],
+
+      // 40
+      [19, 148, 118, 6, 149, 119],
+      [18, 75, 47, 31, 76, 48],
+      [34, 54, 24, 34, 55, 25],
+      [20, 45, 15, 61, 46, 16]
+    ];
+
+    var qrRSBlock = function(totalCount, dataCount) {
+      var _this = {};
+      _this.totalCount = totalCount;
+      _this.dataCount = dataCount;
+      return _this;
+    };
+
+    var _this = {};
+
+    var getRsBlockTable = function(typeNumber, errorCorrectionLevel) {
+
+      switch(errorCorrectionLevel) {
+      case QRErrorCorrectionLevel.L :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 0];
+      case QRErrorCorrectionLevel.M :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 1];
+      case QRErrorCorrectionLevel.Q :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 2];
+      case QRErrorCorrectionLevel.H :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 3];
+      default :
+        return undefined;
+      }
+    };
+
+    _this.getRSBlocks = function(typeNumber, errorCorrectionLevel) {
+
+      var rsBlock = getRsBlockTable(typeNumber, errorCorrectionLevel);
+
+      if (typeof rsBlock == 'undefined') {
+        throw 'bad rs block @ typeNumber:' + typeNumber +
+            '/errorCorrectionLevel:' + errorCorrectionLevel;
+      }
+
+      var length = rsBlock.length / 3;
+
+      var list = [];
+
+      for (var i = 0; i < length; i += 1) {
+
+        var count = rsBlock[i * 3 + 0];
+        var totalCount = rsBlock[i * 3 + 1];
+        var dataCount = rsBlock[i * 3 + 2];
+
+        for (var j = 0; j < count; j += 1) {
+          list.push(qrRSBlock(totalCount, dataCount) );
+        }
+      }
+
+      return list;
+    };
+
+    return _this;
+  }();
+
+  //---------------------------------------------------------------------
+  // qrBitBuffer
+  //---------------------------------------------------------------------
+
+  var qrBitBuffer = function() {
+
+    var _buffer = [];
+    var _length = 0;
+
+    var _this = {};
+
+    _this.getBuffer = function() {
+      return _buffer;
+    };
+
+    _this.getAt = function(index) {
+      var bufIndex = Math.floor(index / 8);
+      return ( (_buffer[bufIndex] >>> (7 - index % 8) ) & 1) == 1;
+    };
+
+    _this.put = function(num, length) {
+      for (var i = 0; i < length; i += 1) {
+        _this.putBit( ( (num >>> (length - i - 1) ) & 1) == 1);
+      }
+    };
+
+    _this.getLengthInBits = function() {
+      return _length;
+    };
+
+    _this.putBit = function(bit) {
+
+      var bufIndex = Math.floor(_length / 8);
+      if (_buffer.length <= bufIndex) {
+        _buffer.push(0);
+      }
+
+      if (bit) {
+        _buffer[bufIndex] |= (0x80 >>> (_length % 8) );
+      }
+
+      _length += 1;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrNumber
+  //---------------------------------------------------------------------
+
+  var qrNumber = function(data) {
+
+    var _mode = QRMode.MODE_NUMBER;
+    var _data = data;
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return _data.length;
+    };
+
+    _this.write = function(buffer) {
+
+      var data = _data;
+
+      var i = 0;
+
+      while (i + 2 < data.length) {
+        buffer.put(strToNum(data.substring(i, i + 3) ), 10);
+        i += 3;
+      }
+
+      if (i < data.length) {
+        if (data.length - i == 1) {
+          buffer.put(strToNum(data.substring(i, i + 1) ), 4);
+        } else if (data.length - i == 2) {
+          buffer.put(strToNum(data.substring(i, i + 2) ), 7);
+        }
+      }
+    };
+
+    var strToNum = function(s) {
+      var num = 0;
+      for (var i = 0; i < s.length; i += 1) {
+        num = num * 10 + chatToNum(s.charAt(i) );
+      }
+      return num;
+    };
+
+    var chatToNum = function(c) {
+      if ('0' <= c && c <= '9') {
+        return c.charCodeAt(0) - '0'.charCodeAt(0);
+      }
+      throw 'illegal char :' + c;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrAlphaNum
+  //---------------------------------------------------------------------
+
+  var qrAlphaNum = function(data) {
+
+    var _mode = QRMode.MODE_ALPHA_NUM;
+    var _data = data;
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return _data.length;
+    };
+
+    _this.write = function(buffer) {
+
+      var s = _data;
+
+      var i = 0;
+
+      while (i + 1 < s.length) {
+        buffer.put(
+          getCode(s.charAt(i) ) * 45 +
+          getCode(s.charAt(i + 1) ), 11);
+        i += 2;
+      }
+
+      if (i < s.length) {
+        buffer.put(getCode(s.charAt(i) ), 6);
+      }
+    };
+
+    var getCode = function(c) {
+
+      if ('0' <= c && c <= '9') {
+        return c.charCodeAt(0) - '0'.charCodeAt(0);
+      } else if ('A' <= c && c <= 'Z') {
+        return c.charCodeAt(0) - 'A'.charCodeAt(0) + 10;
+      } else {
+        switch (c) {
+        case ' ' : return 36;
+        case '$' : return 37;
+        case '%' : return 38;
+        case '*' : return 39;
+        case '+' : return 40;
+        case '-' : return 41;
+        case '.' : return 42;
+        case '/' : return 43;
+        case ':' : return 44;
+        default :
+          throw 'illegal char :' + c;
+        }
+      }
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qr8BitByte
+  //---------------------------------------------------------------------
+
+  var qr8BitByte = function(data) {
+
+    var _mode = QRMode.MODE_8BIT_BYTE;
+    var _data = data;
+    var _bytes = qrcode.stringToBytes(data);
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return _bytes.length;
+    };
+
+    _this.write = function(buffer) {
+      for (var i = 0; i < _bytes.length; i += 1) {
+        buffer.put(_bytes[i], 8);
+      }
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrKanji
+  //---------------------------------------------------------------------
+
+  var qrKanji = function(data) {
+
+    var _mode = QRMode.MODE_KANJI;
+    var _data = data;
+
+    var stringToBytes = qrcode.stringToBytesFuncs['SJIS'];
+    if (!stringToBytes) {
+      throw 'sjis not supported.';
+    }
+    !function(c, code) {
+      // self test for sjis support.
+      var test = stringToBytes(c);
+      if (test.length != 2 || ( (test[0] << 8) | test[1]) != code) {
+        throw 'sjis not supported.';
+      }
+    }('\u53cb', 0x9746);
+
+    var _bytes = stringToBytes(data);
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return ~~(_bytes.length / 2);
+    };
+
+    _this.write = function(buffer) {
+
+      var data = _bytes;
+
+      var i = 0;
+
+      while (i + 1 < data.length) {
+
+        var c = ( (0xff & data[i]) << 8) | (0xff & data[i + 1]);
+
+        if (0x8140 <= c && c <= 0x9FFC) {
+          c -= 0x8140;
+        } else if (0xE040 <= c && c <= 0xEBBF) {
+          c -= 0xC140;
+        } else {
+          throw 'illegal char at ' + (i + 1) + '/' + c;
+        }
+
+        c = ( (c >>> 8) & 0xff) * 0xC0 + (c & 0xff);
+
+        buffer.put(c, 13);
+
+        i += 2;
+      }
+
+      if (i < data.length) {
+        throw 'illegal char at ' + (i + 1);
+      }
+    };
+
+    return _this;
+  };
+
+  //=====================================================================
+  // GIF Support etc.
+  //
+
+  //---------------------------------------------------------------------
+  // byteArrayOutputStream
+  //---------------------------------------------------------------------
+
+  var byteArrayOutputStream = function() {
+
+    var _bytes = [];
+
+    var _this = {};
+
+    _this.writeByte = function(b) {
+      _bytes.push(b & 0xff);
+    };
+
+    _this.writeShort = function(i) {
+      _this.writeByte(i);
+      _this.writeByte(i >>> 8);
+    };
+
+    _this.writeBytes = function(b, off, len) {
+      off = off || 0;
+      len = len || b.length;
+      for (var i = 0; i < len; i += 1) {
+        _this.writeByte(b[i + off]);
+      }
+    };
+
+    _this.writeString = function(s) {
+      for (var i = 0; i < s.length; i += 1) {
+        _this.writeByte(s.charCodeAt(i) );
+      }
+    };
+
+    _this.toByteArray = function() {
+      return _bytes;
+    };
+
+    _this.toString = function() {
+      var s = '';
+      s += '[';
+      for (var i = 0; i < _bytes.length; i += 1) {
+        if (i > 0) {
+          s += ',';
+        }
+        s += _bytes[i];
+      }
+      s += ']';
+      return s;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // base64EncodeOutputStream
+  //---------------------------------------------------------------------
+
+  var base64EncodeOutputStream = function() {
+
+    var _buffer = 0;
+    var _buflen = 0;
+    var _length = 0;
+    var _base64 = '';
+
+    var _this = {};
+
+    var writeEncoded = function(b) {
+      _base64 += String.fromCharCode(encode(b & 0x3f) );
+    };
+
+    var encode = function(n) {
+      if (n < 0) {
+        // error.
+      } else if (n < 26) {
+        return 0x41 + n;
+      } else if (n < 52) {
+        return 0x61 + (n - 26);
+      } else if (n < 62) {
+        return 0x30 + (n - 52);
+      } else if (n == 62) {
+        return 0x2b;
+      } else if (n == 63) {
+        return 0x2f;
+      }
+      throw 'n:' + n;
+    };
+
+    _this.writeByte = function(n) {
+
+      _buffer = (_buffer << 8) | (n & 0xff);
+      _buflen += 8;
+      _length += 1;
+
+      while (_buflen >= 6) {
+        writeEncoded(_buffer >>> (_buflen - 6) );
+        _buflen -= 6;
+      }
+    };
+
+    _this.flush = function() {
+
+      if (_buflen > 0) {
+        writeEncoded(_buffer << (6 - _buflen) );
+        _buffer = 0;
+        _buflen = 0;
+      }
+
+      if (_length % 3 != 0) {
+        // padding
+        var padlen = 3 - _length % 3;
+        for (var i = 0; i < padlen; i += 1) {
+          _base64 += '=';
+        }
+      }
+    };
+
+    _this.toString = function() {
+      return _base64;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // base64DecodeInputStream
+  //---------------------------------------------------------------------
+
+  var base64DecodeInputStream = function(str) {
+
+    var _str = str;
+    var _pos = 0;
+    var _buffer = 0;
+    var _buflen = 0;
+
+    var _this = {};
+
+    _this.read = function() {
+
+      while (_buflen < 8) {
+
+        if (_pos >= _str.length) {
+          if (_buflen == 0) {
+            return -1;
+          }
+          throw 'unexpected end of file./' + _buflen;
+        }
+
+        var c = _str.charAt(_pos);
+        _pos += 1;
+
+        if (c == '=') {
+          _buflen = 0;
+          return -1;
+        } else if (c.match(/^\s$/) ) {
+          // ignore if whitespace.
+          continue;
+        }
+
+        _buffer = (_buffer << 6) | decode(c.charCodeAt(0) );
+        _buflen += 6;
+      }
+
+      var n = (_buffer >>> (_buflen - 8) ) & 0xff;
+      _buflen -= 8;
+      return n;
+    };
+
+    var decode = function(c) {
+      if (0x41 <= c && c <= 0x5a) {
+        return c - 0x41;
+      } else if (0x61 <= c && c <= 0x7a) {
+        return c - 0x61 + 26;
+      } else if (0x30 <= c && c <= 0x39) {
+        return c - 0x30 + 52;
+      } else if (c == 0x2b) {
+        return 62;
+      } else if (c == 0x2f) {
+        return 63;
+      } else {
+        throw 'c:' + c;
+      }
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // gifImage (B/W)
+  //---------------------------------------------------------------------
+
+  var gifImage = function(width, height) {
+
+    var _width = width;
+    var _height = height;
+    var _data = new Array(width * height);
+
+    var _this = {};
+
+    _this.setPixel = function(x, y, pixel) {
+      _data[y * _width + x] = pixel;
+    };
+
+    _this.write = function(out) {
+
+      //---------------------------------
+      // GIF Signature
+
+      out.writeString('GIF87a');
+
+      //---------------------------------
+      // Screen Descriptor
+
+      out.writeShort(_width);
+      out.writeShort(_height);
+
+      out.writeByte(0x80); // 2bit
+      out.writeByte(0);
+      out.writeByte(0);
+
+      //---------------------------------
+      // Global Color Map
+
+      // black
+      out.writeByte(0x00);
+      out.writeByte(0x00);
+      out.writeByte(0x00);
+
+      // white
+      out.writeByte(0xff);
+      out.writeByte(0xff);
+      out.writeByte(0xff);
+
+      //---------------------------------
+      // Image Descriptor
+
+      out.writeString(',');
+      out.writeShort(0);
+      out.writeShort(0);
+      out.writeShort(_width);
+      out.writeShort(_height);
+      out.writeByte(0);
+
+      //---------------------------------
+      // Local Color Map
+
+      //---------------------------------
+      // Raster Data
+
+      var lzwMinCodeSize = 2;
+      var raster = getLZWRaster(lzwMinCodeSize);
+
+      out.writeByte(lzwMinCodeSize);
+
+      var offset = 0;
+
+      while (raster.length - offset > 255) {
+        out.writeByte(255);
+        out.writeBytes(raster, offset, 255);
+        offset += 255;
+      }
+
+      out.writeByte(raster.length - offset);
+      out.writeBytes(raster, offset, raster.length - offset);
+      out.writeByte(0x00);
+
+      //---------------------------------
+      // GIF Terminator
+      out.writeString(';');
+    };
+
+    var bitOutputStream = function(out) {
+
+      var _out = out;
+      var _bitLength = 0;
+      var _bitBuffer = 0;
+
+      var _this = {};
+
+      _this.write = function(data, length) {
+
+        if ( (data >>> length) != 0) {
+          throw 'length over';
+        }
+
+        while (_bitLength + length >= 8) {
+          _out.writeByte(0xff & ( (data << _bitLength) | _bitBuffer) );
+          length -= (8 - _bitLength);
+          data >>>= (8 - _bitLength);
+          _bitBuffer = 0;
+          _bitLength = 0;
+        }
+
+        _bitBuffer = (data << _bitLength) | _bitBuffer;
+        _bitLength = _bitLength + length;
+      };
+
+      _this.flush = function() {
+        if (_bitLength > 0) {
+          _out.writeByte(_bitBuffer);
+        }
+      };
+
+      return _this;
+    };
+
+    var getLZWRaster = function(lzwMinCodeSize) {
+
+      var clearCode = 1 << lzwMinCodeSize;
+      var endCode = (1 << lzwMinCodeSize) + 1;
+      var bitLength = lzwMinCodeSize + 1;
+
+      // Setup LZWTable
+      var table = lzwTable();
+
+      for (var i = 0; i < clearCode; i += 1) {
+        table.add(String.fromCharCode(i) );
+      }
+      table.add(String.fromCharCode(clearCode) );
+      table.add(String.fromCharCode(endCode) );
+
+      var byteOut = byteArrayOutputStream();
+      var bitOut = bitOutputStream(byteOut);
+
+      // clear code
+      bitOut.write(clearCode, bitLength);
+
+      var dataIndex = 0;
+
+      var s = String.fromCharCode(_data[dataIndex]);
+      dataIndex += 1;
+
+      while (dataIndex < _data.length) {
+
+        var c = String.fromCharCode(_data[dataIndex]);
+        dataIndex += 1;
+
+        if (table.contains(s + c) ) {
+
+          s = s + c;
+
+        } else {
+
+          bitOut.write(table.indexOf(s), bitLength);
+
+          if (table.size() < 0xfff) {
+
+            if (table.size() == (1 << bitLength) ) {
+              bitLength += 1;
+            }
+
+            table.add(s + c);
+          }
+
+          s = c;
+        }
+      }
+
+      bitOut.write(table.indexOf(s), bitLength);
+
+      // end code
+      bitOut.write(endCode, bitLength);
+
+      bitOut.flush();
+
+      return byteOut.toByteArray();
+    };
+
+    var lzwTable = function() {
+
+      var _map = {};
+      var _size = 0;
+
+      var _this = {};
+
+      _this.add = function(key) {
+        if (_this.contains(key) ) {
+          throw 'dup key:' + key;
+        }
+        _map[key] = _size;
+        _size += 1;
+      };
+
+      _this.size = function() {
+        return _size;
+      };
+
+      _this.indexOf = function(key) {
+        return _map[key];
+      };
+
+      _this.contains = function(key) {
+        return typeof _map[key] != 'undefined';
+      };
+
+      return _this;
+    };
+
+    return _this;
+  };
+
+  var createDataURL = function(width, height, getPixel) {
+    var gif = gifImage(width, height);
+    for (var y = 0; y < height; y += 1) {
+      for (var x = 0; x < width; x += 1) {
+        gif.setPixel(x, y, getPixel(x, y) );
+      }
+    }
+
+    var b = byteArrayOutputStream();
+    gif.write(b);
+
+    var base64 = base64EncodeOutputStream();
+    var bytes = b.toByteArray();
+    for (var i = 0; i < bytes.length; i += 1) {
+      base64.writeByte(bytes[i]);
+    }
+    base64.flush();
+
+    return 'data:image/gif;base64,' + base64;
+  };
+
+  //---------------------------------------------------------------------
+  // returns qrcode function.
+
+  return qrcode;
+}();
+
+// multibyte support
+!function() {
+
+  qrcode.stringToBytesFuncs['UTF-8'] = function(s) {
+    // http://stackoverflow.com/questions/18729405/how-to-convert-utf8-string-to-byte-array
+    function toUTF8Array(str) {
+      var utf8 = [];
+      for (var i=0; i < str.length; i++) {
+        var charcode = str.charCodeAt(i);
+        if (charcode < 0x80) utf8.push(charcode);
+        else if (charcode < 0x800) {
+          utf8.push(0xc0 | (charcode >> 6),
+              0x80 | (charcode & 0x3f));
+        }
+        else if (charcode < 0xd800 || charcode >= 0xe000) {
+          utf8.push(0xe0 | (charcode >> 12),
+              0x80 | ((charcode>>6) & 0x3f),
+              0x80 | (charcode & 0x3f));
+        }
+        // surrogate pair
+        else {
+          i++;
+          // UTF-16 encodes 0x10000-0x10FFFF by
+          // subtracting 0x10000 and splitting the
+          // 20 bits of 0x0-0xFFFFF into two halves
+          charcode = 0x10000 + (((charcode & 0x3ff)<<10)
+            | (str.charCodeAt(i) & 0x3ff));
+          utf8.push(0xf0 | (charcode >>18),
+              0x80 | ((charcode>>12) & 0x3f),
+              0x80 | ((charcode>>6) & 0x3f),
+              0x80 | (charcode & 0x3f));
+        }
+      }
+      return utf8;
+    }
+    return toUTF8Array(s);
+  };
+
+}();
+
+(function (factory) {
+  if (typeof define === 'function' && define.amd) {
+      define([], factory);
+  } else if (typeof exports === 'object') {
+      module.exports = factory();
+  }
+}(function () {
+    return qrcode;
+}));
+</script>
+<script></script>
+<script>
+/* ===== shared/cari.js ===== */
+/* ============ MESIN PENCARIAN PRODUK (dipakai halaman pesan pelanggan) ============
+ * Pencarian yang "memaafkan": tahan salah ketik ringan, paham istilah sehari-hari / bahasa Sunda,
+ * dan mengurutkan hasil dari yang paling cocok + paling sering dibeli.
+ *   const idx = CariProduk.indeks(daftar, item => ({ nama, alias, kategori, populer }));
+ *   CariProduk.cari(idx, 'endog 1 kg', 30)  ->  [item, ...]
+ */
+const CariProduk = (() => {
+  // istilah pelanggan -> kata yang ada di nama produk
+  const SINONIM = {
+    endog: ['telur'],
+    telor: ['telur'],
+    odol: ['pasta gigi', 'pepsodent', 'ciptadent', 'formula'],
+    aci: ['tapioka', 'kanji'],
+    kanji: ['tapioka'],
+    bako: ['tembakau'],
+    samsu: ['dji sam soe'],
+    gg: ['gudang garam'],
+    jarum: ['djarum'],
+    djarum: ['jarum'],
+    roko: ['rokok'],
+    udud: ['rokok'],
+    mi: ['mie'],
+    mei: ['mie'],
+    indomi: ['indomie'],
+    supermi: ['supermie'],
+    minyak: ['minyak goreng'],
+    migor: ['minyak goreng'],
+    beas: ['beras'],
+    uyah: ['garam'],
+    gulpas: ['gula pasir', 'gula putih'],
+    pasir: ['putih'],
+    saos: ['saus'],
+    saus: ['saos'],
+    sampo: ['shampoo', 'shampo'],
+    shampo: ['shampoo'],
+    tisu: ['tissue', 'tisue'],
+    tissue: ['tisu'],
+    pampers: ['popok'],
+    popok: ['pampers', 'diapers'],
+    deterjen: ['detergen', 'rinso', 'daia', 'soklin', 'attack'],
+    detergen: ['deterjen'],
+    sabun: ['soap'],
+    korek: ['korek api'],
+    nyamuk: ['obat nyamuk', 'baygon', 'vape', 'hit'],
+    kopi: ['coffee'],
+    susu: ['milk'],
+    es: ['ice'],
+    cai: ['air'],
+    aqua: ['air mineral'],
+    galon: ['air galon'],
+    kerupuk: ['krupuk'],
+    krupuk: ['kerupuk'],
+    permen: ['candy'],
+    royko: ['royco'],
+    vetsin: ['micin', 'sasa', 'ajinomoto'],
+    micin: ['penyedap', 'sasa', 'ajinomoto', 'masako'],
+    pembalut: ['softex', 'charm', 'laurier'],
+    rinso: ['deterjen'],
+    terigu: ['tepung terigu'],
+    tepung: ['terigu']
+  };
+  // kata yang tidak menentukan barang (boleh tidak cocok)
+  const KATA_BEBAS = new Set([
+    'yang',
+    'yg',
+    'dan',
+    'sama',
+    'beli',
+    'mau',
+    'pesan',
+    'pesen',
+    'tolong',
+    'nu',
+    'anu',
+    'teh',
+    'sareng',
+    'rasa'
+  ]);
+  const SATUAN = new Set([
+    'pcs',
+    'pc',
+    'rcg',
+    'renceng',
+    'bks',
+    'bungkus',
+    'dus',
+    'karton',
+    'ktn',
+    'pak',
+    'pack',
+    'slop',
+    'btl',
+    'botol',
+    'kg',
+    'gr',
+    'gram',
+    'ml',
+    'liter',
+    'ltr',
+    'sachet',
+    'box',
+    'lusin',
+    'klg',
+    'kaleng',
+    'biji',
+    'buah',
+    'kilo',
+    'kilogram',
+    'ons',
+    'butir',
+    'btr',
+    'batang',
+    'btg',
+    'ikat',
+    'iket',
+    'galon',
+    'kotak',
+    'pouch',
+    'sak',
+    'karung',
+    'bal',
+    'lembar',
+    'selop',
+    'slp',
+    'saset',
+    'sct',
+    'bgks',
+    'dos',
+    'lt',
+    'rencang',
+    'renteng',
+    'l'
+  ]);
+
+  function norm(s) {
+    return String(s || '')
+      .toLowerCase()
+      .normalize('NFKD')
+      .replace(/[̀-ͯ]/g, '')
+      .replace(/(\d)([a-z])/g, '$1 $2')
+      .replace(/([a-z])(\d)/g, '$1 $2')
+      .replace(/[^a-z0-9]+/g, ' ')
+      .trim();
+  }
+  const tokens = s => norm(s).split(' ').filter(Boolean);
+  /** bentuk "bunyi" sebuah kata, supaya ejaan Indonesia untuk merek asing tetap cocok (sunlite = sunlight) */
+  const bunyi = w =>
+    w
+      .replace(/ght/g, 't')
+      .replace(/ph/g, 'f')
+      .replace(/ck|q/g, 'k')
+      .replace(/x/g, 'ks')
+      .replace(/dj/g, 'j')
+      .replace(/tj/g, 'c')
+      .replace(/sh/g, 's')
+      .replace(/oe|oo/g, 'u')
+      .replace(/ee|y/g, 'i')
+      .replace(/(.)\1+/g, '$1')
+      .replace(/h$/, '');
+
+  /** jarak edit (Damerau-Levenshtein terbatas), berhenti kalau sudah > maks */
+  function jarak(a, b, maks) {
+    if (Math.abs(a.length - b.length) > maks) return maks + 1;
+    const d = [];
+    for (let i = 0; i <= a.length; i++) d[i] = [i];
+    for (let j = 1; j <= b.length; j++) d[0][j] = j;
+    for (let i = 1; i <= a.length; i++) {
+      let rowMin = Infinity;
+      for (let j = 1; j <= b.length; j++) {
+        const c = a[i - 1] === b[j - 1] ? 0 : 1;
+        let v = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + c);
+        if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1])
+          v = Math.min(v, d[i - 2][j - 2] + 1);
+        d[i][j] = v;
+        if (v < rowMin) rowMin = v;
+      }
+      if (rowMin > maks) return maks + 1;
+    }
+    return d[a.length][b.length];
+  }
+
+  function indeks(list, ambil) {
+    return list.map(item => {
+      const x = ambil(item);
+      const namaTok = tokens(x.nama);
+      const aliasTok = tokens(x.alias);
+      return {
+        item,
+        namaTok,
+        semua: [...new Set([...namaTok, ...aliasTok])],
+        katTok: tokens(x.kategori),
+        teks: ' ' + [...namaTok, '|', ...aliasTok].join(' ') + ' ',
+        populer: Number(x.populer) || 0,
+        prioritas: Array.isArray(x.prioritas) ? x.prioritas.map(k => String(k).toLowerCase()) : [],
+        prioritasEkstra: Number(x.prioritasEkstra) || 0,
+        // singkatan dari huruf depan tiap kata: "gudang garam surya 16" -> ggs / ggs16
+        singkat: namaTok
+          .filter(t => !/^\d/.test(t))
+          .map(t => t[0])
+          .join(''),
+        singkatAngka: namaTok.map(t => (/^\d/.test(t) ? t : t[0])).join('')
+      };
+    });
+  }
+
+  /** skor satu kata pencarian terhadap satu produk (0 = tidak cocok) */
+  function skorKata(e, q) {
+    if (e.semua.includes(q)) return 10;
+    const angka = /^\d+$/.test(q);
+    if (!angka && q.length >= 2 && e.semua.some(t => t.startsWith(q))) return 7;
+    if (!angka && q.length >= 3 && e.teks.includes(q)) return 4;
+    for (const s of SINONIM[q] || [])
+      if (e.teks.includes(' ' + norm(s) + ' ') || e.teks.includes(' ' + norm(s))) return 9;
+    if (e.katTok.includes(q) || (q.length >= 4 && e.katTok.some(t => t.startsWith(q)))) return 5;
+    if (!angka && q.length >= 4) {
+      const maks = q.length >= 7 ? 2 : 1;
+      const qb = bunyi(q);
+      const mirip = t => {
+        const tb = bunyi(t);
+        const potong = tb.length > qb.length + 1 ? tb.slice(0, qb.length + 1) : tb;
+        return qb === tb || jarak(qb, potong, maks) <= maks;
+      };
+      if (e.semua.some(t => t.length >= 3 && mirip(t))) return 3;
+    }
+    return 0;
+  }
+
+  /** barang kebutuhan rumah tangga: naik jauh kalau yang dicari berhubungan dengan kata kuncinya
+   *  (cari "minyak" -> minyak goreng), naik sedikit kalau tidak (cari "garam" -> rokok Gudang Garam) */
+  function skorPrioritas(e, kataCari) {
+    const k = e.prioritas;
+    if (!k.length) return 0;
+    if (k.includes('*')) return 30 + 5 * e.prioritasEkstra;
+    const nyambung = kataCari.some(
+      w =>
+        w.length >= 2 && k.some(x => x.startsWith(w) || w.startsWith(x) || (w.length >= 4 && x.includes(w)))
+    );
+    return nyambung ? 30 + 5 * e.prioritasEkstra : 6;
+  }
+
+  /** seperti cari(), tetapi tiap hasil membawa skornya ({item, skor, cocok}).
+   *  cocok = kemiripan kata saja (tanpa laris/prioritas), dipakai untuk menilai "yakin atau tidak" */
+  function cariSkor(idx, query, batas = 40) {
+    const qs = tokens(query);
+    if (!qs.length) return [];
+    const wajib = qs.filter(q => !KATA_BEBAS.has(q) && !SATUAN.has(q) && !/^\d+$/.test(q));
+    const opsional = qs.filter(q => !wajib.includes(q));
+    const qn = norm(query);
+    const qRapat = qn.replace(/ /g, '');
+    const bisaSingkat = qs.length <= 2 && qRapat.length >= 2 && /^[a-z]/.test(qRapat);
+    const hasil = [];
+    for (const e of idx) {
+      if (bisaSingkat && (e.singkat.startsWith(qRapat) || e.singkatAngka.startsWith(qRapat))) {
+        const persis = e.singkat === qRapat || e.singkatAngka === qRapat;
+        hasil.push([
+          (persis ? 30 : 18) + Math.min(6, Math.log2(1 + e.populer)) + skorPrioritas(e, []),
+          e,
+          persis ? 30 : 18
+        ]);
+        continue;
+      }
+      let skor = 0,
+        meleset = 0;
+      for (const q of wajib) {
+        const s = skorKata(e, q);
+        if (s) skor += s;
+        else meleset++;
+      }
+      if (wajib.length && (meleset > 1 || (meleset === 1 && wajib.length < 3))) continue;
+      if (!wajib.length && !opsional.some(q => e.semua.includes(q))) continue;
+      skor -= meleset * 6;
+      for (const q of opsional) if (e.semua.includes(q)) skor += 6;
+      if (e.teks.startsWith(' ' + qn)) skor += 8;
+      const cocok = skor; // kemiripan kata saja, sebelum ditambah laris / prioritas
+      if (wajib[0] && e.namaTok[0] && (e.namaTok[0] === wajib[0] || e.namaTok[0].startsWith(wajib[0])))
+        skor += 4;
+      skor += Math.min(6, Math.log2(1 + e.populer));
+      skor += skorPrioritas(e, wajib);
+      skor -= e.namaTok.length * 0.15;
+      hasil.push([skor, e, cocok]);
+    }
+    hasil.sort((a, b) => b[0] - a[0] || b[1].populer - a[1].populer);
+    return hasil.slice(0, batas).map(h => ({ item: h[1].item, skor: h[0], cocok: h[2] }));
+  }
+  /** daftar barang yang cocok, paling cocok di atas */
+  function cari(idx, query, batas = 40) {
+    return cariSkor(idx, query, batas).map(h => h.item);
+  }
+
+  return { indeks, cari, cariSkor, norm, tokens };
+})();
+
+/* ===== shared/daftar.js ===== */
+/* ============ PEMBACA DAFTAR BELANJA (dipakai halaman pesan & kasir) ============
+ * Mengubah teks pesanan (dari WhatsApp atau tulisan pembeli) menjadi baris barang.
+ *   BacaDaftar.baca(teks, { angkaDiNama }) ->
+ *     { nama, hp, harga, catatan, baris: [{ teks, qty, unit, kata, bebas }] }
+ * Tahan terhadap:
+ *  - awalan salinan WhatsApp: "[06.58, 31/10/2026] Bu Ani: gula 2 kg" (nama pengirim dipakai sebagai nama)
+ *  - daftar dalam satu baris dipisah koma: "gula 2kg, minyak 1 liter, telur sekilo"
+ *  - jumlah di depan atau di belakang: "2 renceng kopi", "kopi 2 renceng", "indomie x2"
+ *  - kata bilangan: sekilo, setengah kilo, dua bungkus, bahasa Sunda (sakilo, tilu, satengah)
+ *  - sapaan & penutup: "Assalamualaikum bu", "punten", "nuhun", "itu aja ya"
+ *  - angka yang bagian dari nama barang: "surya 16", "aqua 600" (lewat angkaDiNama)
+ * Baris rapi dari halaman pesan berbentuk "2 renceng - NAMA BARANG".
+ */
+const BacaDaftar = (() => {
+  // kata satuan yang ditulis pembeli -> kode satuan di aplikasi
+  const SATUAN = {
+    renceng: 'RCG',
+    rencang: 'RCG',
+    renteng: 'RCG',
+    rcg: 'RCG',
+    l: 'RCG', // singkatan lama di toko: "3 L indocafe" = 3 renceng
+    bungkus: 'BKS',
+    bks: 'BKS',
+    bgks: 'BKS',
+    bungkos: 'BKS',
+    pcs: 'PCS',
+    pc: 'PCS',
+    biji: 'PCS',
+    buah: 'PCS',
+    bh: 'PCS',
+    butir: 'PCS',
+    btr: 'PCS',
+    batang: 'PCS',
+    btg: 'PCS',
+    siki: 'PCS',
+    lembar: 'PCS',
+    lbr: 'PCS',
+    pak: 'PACK',
+    pack: 'PACK',
+    pck: 'PACK',
+    dus: 'DUS',
+    dos: 'DUS',
+    karton: 'KTN',
+    ktn: 'KTN',
+    box: 'BOX',
+    kotak: 'BOX',
+    slop: 'SLOP',
+    slp: 'SLOP',
+    selop: 'SLOP',
+    kg: 'KG',
+    kilo: 'KG',
+    kilogram: 'KG',
+    ons: 'ONS',
+    liter: 'LITER',
+    ltr: 'LITER',
+    lt: 'LITER',
+    botol: 'BTL',
+    btl: 'BTL',
+    kaleng: 'KLG',
+    klg: 'KLG',
+    sachet: 'SACHET',
+    saset: 'SACHET',
+    sct: 'SACHET',
+    lusin: 'LUSIN',
+    ikat: 'IKAT',
+    iket: 'IKAT',
+    toples: 'TOPLES',
+    strip: 'STRIP',
+    sak: 'SAK',
+    karung: 'KARUNG',
+    bal: 'BAL',
+    galon: 'GALON',
+    pouch: 'POUCH'
+  };
+  // kode satuan -> kata yang mudah dibaca pembeli
+  const KATA = {
+    RCG: 'renceng',
+    BKS: 'bungkus',
+    PCS: 'pcs',
+    PACK: 'pak',
+    PAK: 'pak',
+    PCK: 'pak',
+    DUS: 'dus',
+    KTN: 'karton',
+    BOX: 'box',
+    SLOP: 'slop',
+    SLP: 'slop',
+    KG: 'kg',
+    ONS: 'ons',
+    LITER: 'liter',
+    BTL: 'botol',
+    KLG: 'kaleng',
+    SACHET: 'sachet',
+    LUSIN: 'lusin',
+    IKAT: 'ikat',
+    TOPLES: 'toples',
+    STRIP: 'strip',
+    SAK: 'sak',
+    KARUNG: 'karung',
+    BAL: 'bal',
+    GALON: 'galon',
+    POUCH: 'pouch'
+  };
+  const ANGKA = {
+    satu: 1,
+    hiji: 1,
+    dua: 2,
+    tiga: 3,
+    tilu: 3,
+    empat: 4,
+    opat: 4,
+    lima: 5,
+    enam: 6,
+    genep: 6,
+    tujuh: 7,
+    delapan: 8,
+    dalapan: 8,
+    sembilan: 9,
+    salapan: 9,
+    sepuluh: 10,
+    sapuluh: 10,
+    setengah: 0.5,
+    satengah: 0.5,
+    stengah: 0.5,
+    seperempat: 0.25,
+    saparapat: 0.25
+  };
+  // kata yang hanya sapaan / basa-basi, bukan barang
+  const SAPA = new Set(
+    (
+      'assalamualaikum asalamualaikum assalamu alaikum alaikumsalam wr wb wassalamualaikum wassalam punten permisi ' +
+      'halo hallo hai hi selamat pagi siang sore malam bu ibu pak bapak teh teteh ceu euceu mang emang kang akang aa ' +
+      'bi bibi neng mbak mas om tante bos boss haji hj terima kasih makasih trims tq thanks nuhun hatur sekian ' +
+      'ya yah yaa mau mo pengen ingin pesan pesen mesen order dong nya aja saja wae deh itu segitu dulu ini berikut ' +
+      'daftar belanja belanjaan list barang saya aku abdi kami tolong minta mohon sehat semoga barokah amin'
+    ).split(' ')
+  );
+  const PEMBUKA =
+    /^(?:ass?alamu|asalamu|punten|permisi|hall?o\b|selamat (?:pagi|siang|sore|malam)|terima ?kasih|makasih|hatur nuhun|nuhun|wassalam)/i;
+  const PENGISI_DEPAN =
+    /^(?:(?:mau|mo|pengen|ingin|minta|tolong|mohon|pesen|pesan|mesen|beli|meuli|order|ambil|tambah|tambahin|ditambah|plus|terus|trus|lalu|sama|sareng|jeung|dan|juga|yang|yg|nu)\s+)+/i;
+  const PENGISI_BELAKANG = /(?:\s+(?:ya|yah|yaa|aja|saja|wae|deh|dong|juga|bu|ibu|kang|ceu|neng))+$/i;
+
+  const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const RE_SAT = Object.keys(SATUAN)
+    .sort((a, b) => b.length - a.length)
+    .map(esc)
+    .join('|');
+  const RE_SE =
+    'kilo|kg|renceng|rencang|bungkus|dus|slop|pak|botol|kaleng|liter|lusin|ikat|iket|ons|sachet|butir|biji|batang|karton|galon|sak|karung|bal|bks|rcg';
+  const RE_ANGKA = Object.keys(ANGKA)
+    .sort((a, b) => b.length - a.length)
+    .join('|');
+  const Q = '(\\d+\\s*\\/\\s*\\d+|\\d+(?:[.,]\\d+)?)';
+  const R = {
+    // rapi dari halaman pesan / ketik rapi: "2 renceng - NAMA", "1 - nama", "2 kg = gula"
+    rapi: new RegExp('^' + Q + '(?:\\s*([A-Za-z][A-Za-z ]{0,14}?))?\\s+[-–=:]\\s+(.+)$'),
+    // "gula = 2 kg", "kopi : 2 renceng"
+    rapiBalik: new RegExp('^(.+?)\\s+[-–=:]\\s+' + Q + '\\s*([A-Za-z][A-Za-z ]{0,14})?$'),
+    xDepan: new RegExp('^' + Q + '\\s*[x×]\\s*(.+)$', 'i'),
+    xBelakang: new RegExp('^(.+?)\\s*[x×]\\s*' + Q + '$', 'i'),
+    depan: new RegExp('^' + Q + '(?:\\s*(' + RE_SAT + ')\\b\\.?)?\\s+(.+)$', 'i'),
+    belakangSatuan: new RegExp('^(.+)\\s+' + Q + '\\s*(' + RE_SAT + ')\\.?$', 'i'),
+    belakangAngka: new RegExp('^(.+?)\\s+' + Q + '$'),
+    satuanSaja: new RegExp('^(.+)\\s+(' + RE_SAT + ')\\.?$', 'i')
+  };
+  // awalan salinan WhatsApp Web/Desktop dan file ekspor chat
+  const WA1 =
+    /^\[\d{1,2}[.:]\d{2}(?:[.:]\d{2})?(?:\s?[APap][Mm])?,\s*\d{1,4}[/.-]\d{1,2}[/.-]\d{1,4}\]\s*([^:]{1,40}):\s*/;
+  const WA2 = /^\d{1,2}\/\d{1,2}\/\d{2,4},?\s+\d{1,2}[.:]\d{2}(?:\s?[APap][Mm])?\s+-\s+([^:]{1,40}):\s*/;
+  const EMOJI = /[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\u{200D}\u{20E3}]/gu;
+
+  const namaSatuan = u => KATA[String(u || '').toUpperCase()] || String(u || '').toLowerCase();
+  const kodeSatuan = w => {
+    const k = String(w || '')
+      .toLowerCase()
+      .replace(/\.$/, '')
+      .trim();
+    return SATUAN[k] || '';
+  };
+  function angka(s) {
+    s = String(s).trim().toLowerCase();
+    if (ANGKA[s] != null) return ANGKA[s];
+    const f = s.match(/^(\d+)\s*\/\s*(\d+)$/);
+    if (f) return Number(f[2]) ? Number(f[1]) / Number(f[2]) : 0;
+    return Number(s.replace(',', '.')) || 0;
+  }
+  /** jumlah untuk ditampilkan: 0.5 -> "0,5", 2 -> "2" */
+  const fmtQty = q => String(Math.round(Number(q) * 100) / 100).replace('.', ',');
+
+  /** kata bilangan & "sekilo" -> angka, "2kg" -> "2 kg" */
+  function normAngka(t) {
+    t = t.replace(new RegExp('\\b(?:se|sa)(' + RE_SE + ')\\b', 'gi'), '1 $1');
+    t = t.replace(
+      new RegExp('\\b(\\d+|' + RE_ANGKA + ')\\s+(?:setengah|satengah|stengah)\\s+(' + RE_SAT + ')\\b', 'gi'),
+      (_, a, u) => angka(a) + 0.5 + ' ' + u
+    );
+    t = t.replace(
+      new RegExp('\\b(' + RE_ANGKA + ')\\s+(' + RE_SAT + ')\\b', 'gi'),
+      (_, a, u) => angka(a) + ' ' + u
+    );
+    t = t.replace(new RegExp('\\s(' + RE_ANGKA + ')$', 'i'), (_, a) => ' ' + angka(a));
+    t = t.replace(new RegExp('(\\d)(' + RE_SAT + ')\\b', 'gi'), '$1 $2');
+    return t;
+  }
+  function bersih(line, o) {
+    line = String(line).replace(/[  ]/g, ' ');
+    const m = line.match(WA1) || line.match(WA2);
+    if (m) {
+      const s = m[1].trim();
+      if (/^[+\d][\d\s-]{7,}$/.test(s)) o._hpWA = o._hpWA || s;
+      else o._namaWA = o._namaWA || s;
+      line = line.slice(m[0].length);
+    }
+    return line
+      .replace(EMOJI, ' ')
+      .replace(/[*_~`]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+  /** satu baris bisa berisi beberapa barang: dipisah koma, titik koma, "+", atau "dan" setelah jumlah */
+  function pecah(line) {
+    line = line.replace(/^\s*(?:\d{1,3}[.)]\s+(?=\S)|[-•*·▪>»]+\s*)/, '');
+    if (R.rapi.test(line)) return [line];
+    const out = [];
+    const akhirJumlah = new RegExp('(?:\\d|\\b(?:' + RE_SAT + '))$', 'i');
+    for (const b of line.split(/\s*[;,]\s*(?!\d)|\s+\+\s+|\.\s+(?=[A-Za-z])|[.!?]+$/)) {
+      // "gula 2 kg dan minyak 1 liter": dipisah hanya kalau bagian kiri sudah diakhiri jumlah/satuan
+      // (tanpa lookbehind regex supaya tetap jalan di HP lama)
+      const pot = b.split(/\s+(?:dan|sama|jeung|terus|trus|tambah|plus)\s+/i);
+      let cur = pot[0];
+      const kata = b.match(/\s+(?:dan|sama|jeung|terus|trus|tambah|plus)\s+/gi) || [];
+      for (let i = 1; i < pot.length; i++) {
+        if (akhirJumlah.test(cur.trim())) {
+          out.push(cur);
+          cur = pot[i];
+        } else cur += kata[i - 1] + pot[i];
+      }
+      out.push(cur);
+    }
+    return out.map(x => x.trim()).filter(Boolean);
+  }
+  function hanyaSapaan(t) {
+    if (/\d/.test(t)) return false;
+    if (PEMBUKA.test(t)) return true;
+    const w = t
+      .toLowerCase()
+      .split(/[^a-z]+/)
+      .filter(Boolean);
+    return !w.length || w.every(x => SAPA.has(x));
+  }
+  function rapikanTeks(t) {
+    return t
+      .replace(PENGISI_DEPAN, '')
+      .replace(PENGISI_BELAKANG, '')
+      .replace(/^[-x×*:=.,\s]+|[-x×*:=,\s]+$/g, '')
+      .trim();
+  }
+  /** satu barang: { teks, qty, unit, kata, bebas } atau null */
+  function bacaItem(c, opt, o, awalBaris) {
+    let t = c.replace(/^\s*(?:\d{1,3}[.)]\s+|[-•*·▪>»]+\s*)/, '').trim();
+    if (!t) return null;
+    let bebas = false;
+    const tanda = /\s*[[(](?:belum|tidak) ada di daftar[\])]\s*/i;
+    if (tanda.test(t)) {
+      bebas = true;
+      t = t.replace(tanda, ' ').trim();
+    }
+    let m = t.match(R.rapi);
+    if (m) {
+      const w = (m[2] || '').trim();
+      return jadi(m[3], angka(m[1]), w, bebas);
+    }
+    if (hanyaSapaan(t) && (awalBaris || !/^teh$/i.test(t))) return null;
+    if (!/\d/.test(t) && t.split(' ').length <= 8) {
+      if (/\b(?:di)?(?:antar|anter|anterin|antarkan|kirim|kirimin|kirimkan)\b/i.test(t)) {
+        o.ambil = 'Diantar';
+        if (t.split(' ').length > 1 && !/^(?:di)?(?:antar|anter)(?:kan)?$/i.test(t)) o.catatan.push(t);
+        return null;
+      }
+      if (
+        /(?:^|\s)diambil\b|\bambil (?:sendiri|ke toko|nanti|sore|besok)|^nanti (?:di)?ambil|\bke toko\b/i.test(
+          t
+        )
+      ) {
+        o.ambil = 'Diambil ke toko';
+        return null;
+      }
+    }
+    t = normAngka(t.replace(PENGISI_DEPAN, '').replace(PENGISI_BELAKANG, ''));
+    if ((m = t.match(R.rapiBalik))) return jadi(m[1], angka(m[2]), (m[3] || '').trim(), bebas);
+    let qty = 1,
+      kata = '',
+      teks = t;
+    if ((m = t.match(R.xDepan))) {
+      qty = angka(m[1]);
+      teks = m[2];
+    } else if ((m = t.match(R.depan))) {
+      qty = angka(m[1]);
+      kata = m[2] || '';
+      teks = m[3];
+      // "2 kopi kapal api renceng" -> satuan di belakang
+      if (!kata && (m = teks.match(R.satuanSaja))) {
+        teks = m[1];
+        kata = m[2];
+      }
+    } else if ((m = t.match(R.belakangSatuan))) {
+      teks = m[1];
+      qty = angka(m[2]);
+      kata = m[3];
+    } else if ((m = t.match(R.xBelakang))) {
+      teks = m[1];
+      qty = angka(m[2]);
+    } else if ((m = t.match(R.belakangAngka))) {
+      const diNama = opt.angkaDiNama ? opt.angkaDiNama(m[1], m[2]) : angka(m[2]) >= 100;
+      if (!diNama) {
+        teks = m[1];
+        qty = angka(m[2]);
+      }
+    } else if ((m = t.match(R.satuanSaja)) && !/^pak$/i.test(m[2])) {
+      // "indomie goreng dus" (tanpa angka). "pak" di akhir lebih sering sapaan.
+      teks = m[1];
+      kata = m[2];
+    }
+    return jadi(teks, qty, kata, bebas);
+  }
+  function jadi(teks, qty, kata, bebas) {
+    teks = rapikanTeks(String(teks || ''));
+    if (!teks || !/[a-z0-9]/i.test(teks)) return null;
+    kata = String(kata || '').toLowerCase();
+    return {
+      teks,
+      qty: qty > 0 ? Math.round(qty * 1000) / 1000 : 1,
+      unit: kata ? kodeSatuan(kata) || kata.toUpperCase() : '',
+      kata,
+      bebas
+    };
+  }
+
+  function baca(raw, opt = {}) {
+    const o = { nama: '', hp: '', harga: '', ambil: '', catatan: [], baris: [] };
+    for (const asli of String(raw || '').split(/\r?\n/)) {
+      const line = bersih(asli, o);
+      if (!line) continue;
+      let m;
+      if ((m = line.match(/^nama(?:\s+(?:pemesan|pembeli|warung|toko|lengkap))?\s*[:=]\s*(.*)$/i))) {
+        if (m[1].trim()) o.nama = m[1].trim();
+        continue;
+      }
+      if ((m = line.match(/^(?:no\.?\s*)?(?:hp|wa|telp|telepon|whatsapp)\.?\s*[:=]\s*(.*)$/i))) {
+        o.hp = m[1].trim();
+        continue;
+      }
+      if ((m = line.match(/^harga\s*[:=]\s*(.+)$/i))) {
+        o.harga = m[1].trim();
+        continue;
+      }
+      if ((m = line.match(/^(catatan|keterangan|ket|alamat)\s*[:=]\s*(.*)$/i))) {
+        if (m[2].trim()) o.catatan.push((/^alamat/i.test(m[1]) ? 'Alamat: ' : '') + m[2].trim());
+        continue;
+      }
+      if ((m = line.match(/^(?:ambil|diambil|antar|diantar|pengambilan|pengiriman)\s*[:=]\s*(.+)$/i))) {
+        o.ambil = /antar|kirim/i.test(m[1] + m[2]) ? 'Diantar' : 'Diambil ke toko';
+        continue;
+      }
+      if (/^(?:diantar|diambil(?: ke toko)?|antar|ambil(?: ke toko| sendiri)?)\.?$/i.test(line)) {
+        o.ambil = /antar/i.test(line) ? 'Diantar' : 'Diambil ke toko';
+        continue;
+      }
+      if (/https?:\/\/|#pesan=/i.test(line) || /^(?:buka di kasir|link pesanan|kode pesanan)\b/i.test(line))
+        continue;
+      if (/^(?:perkiraan |kira-kira |jumlah )?total\b[^a-z]*(?:rp|:|$)/i.test(line)) continue;
+      if (/^[-=_~.]{3,}$/.test(line)) continue;
+      if (/^pesanan\b/i.test(line) && !/\d/.test(line)) continue;
+      // kalimat petunjuk dari contoh format yang ikut tersalin
+      if (/^(?:cara pesan|tulis nama|contoh\b|atau pesan|satu baris)/i.test(line)) continue;
+      if (/:$/.test(line) && !/\d/.test(line)) continue;
+      pecah(line).forEach((c, i) => {
+        const b = bacaItem(c, opt, o, i === 0);
+        if (b) o.baris.push(b);
+      });
+    }
+    if (!o.nama && o._namaWA) o.nama = o._namaWA;
+    if (!o.hp && o._hpWA) o.hp = o._hpWA;
+    return {
+      nama: o.nama,
+      hp: o.hp,
+      harga: o.harga,
+      ambil: o.ambil,
+      catatan: [o.ambil, ...o.catatan].filter(Boolean).join(' · '),
+      baris: o.baris
+    };
+  }
+
+  /** Ukuran di nama barang cocok dengan jumlah pesanan? "telur 1/2 kg" vs "TELUR AYAM 1/2 KG".
+   *  2 = persis (barang itu sudah seukuran pesanan, jumlahnya jadi 1), 1 = barang ukuran 1 kg/liter, 0 = tidak */
+  const UKUR = { KG: ['kg', 'kilo'], LITER: ['liter', 'ltr', 'lt', 'l'], ONS: ['ons'] };
+  const PECAHAN = { 0.5: ['1/2'], 0.25: ['1/4'], 0.75: ['3/4'], 1.5: ['1.5'] };
+  const tokUkur = s =>
+    String(s || '')
+      .toLowerCase()
+      .replace(/(\d),(\d)/g, '$1.$2')
+      .replace(/(\d)([a-z])/g, '$1 $2')
+      .replace(/[^a-z0-9./]+/g, ' ')
+      .trim()
+      .split(' ');
+  function ukuran(nama, qty, unit) {
+    const k = UKUR[String(unit || '').toUpperCase()];
+    if (!k || !(qty > 0)) return 0;
+    const t = tokUkur(nama);
+    const ada = b => t.some((x, i) => x === b && k.includes(t[i + 1]));
+    if ([String(Math.round(qty * 1000) / 1000), ...(PECAHAN[qty] || [])].some(ada)) return 2;
+    return qty >= 1 && ada('1') ? 1 : 0;
+  }
+
+  /** pembantu: apakah angka di belakang ("surya 16") bagian dari nama barang? */
+  function pembantuAngka(idx, namaOf) {
+    return (teks, n) => {
+      const r = CariProduk.cari(idx, teks + ' ' + n, 1);
+      return !!r[0] && CariProduk.tokens(namaOf(r[0])).includes(CariProduk.norm(n));
+    };
+  }
+
+  return { baca, namaSatuan, kodeSatuan, fmtQty, angka, ukuran, pembantuAngka, SATUAN };
+})();
+
+/* ============ HALAMAN PESAN PELANGGAN ============
+ * Pelanggan membuka halaman ini di HP, menulis daftar belanja atau memilih barang, lalu mengirim
+ * pesanan lewat WhatsApp. Dibuat supaya mudah untuk pembeli yang sudah sepuh:
+ *  - harga Warung langsung terpilih (yang paling sering pesan lewat WA adalah warung)
+ *  - kotak "Tulis daftar belanja" ada paling atas, di atas barang yang sering dibeli
+ *  - tulisan & tombol besar, satuan ditulis kata (renceng, bungkus), tidak ada kotak isian bawaan browser
+ *  - pesan WhatsApp rapi tanpa tanda-tanda aneh, satu barang satu baris: "2 renceng - NAMA BARANG"
+ *    (baris ini juga yang dibaca kasir saat pesan ditempel di 📥 Pesanan)
+ *
+ * Sumber daftar barang: window.KATALOG_EMBED (file mandiri) atau katalog.json di folder yang sama.
+ */
+(function () {
+  'use strict';
+  const $ = (s, el) => (el || document).querySelector(s);
+  const $$ = (s, el) => [...(el || document).querySelectorAll(s)];
+  const esc = s =>
+    String(s ?? '').replace(
+      /[&<>"']/g,
+      c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]
+    );
+  const rp = n => Math.round(Number(n) || 0).toLocaleString('id-ID');
+  const fq = BacaDaftar.fmtQty;
+  const sat = u => BacaDaftar.namaSatuan(u);
+  const root = document.getElementById('app');
+  // logo toko = ikon tab (disisipkan saat build)
+  const LOGO = ((document.querySelector('link[rel=icon]') || {}).href || '').startsWith('data:')
+    ? document.querySelector('link[rel=icon]').href
+    : '';
+  const UNIT_SAMA = {
+    PACK: ['PAK', 'PCK', 'PACK KECIL'],
+    PAK: ['PACK', 'PCK', 'PACK KECIL'],
+    DUS: ['KTN', 'BOX'],
+    KTN: ['DUS', 'BOX'],
+    BOX: ['DUS', 'KTN'],
+    BKS: ['PCS'],
+    SLOP: ['SLP'],
+    SLP: ['SLOP'],
+    LITER: ['LTR']
+  };
+  const IKON_HARGA = { umum: '👤', warung: '🏪' };
+  const KET_HARGA = { umum: 'untuk dipakai sendiri', warung: 'untuk dijual lagi' };
+
+  /* ---------- muat katalog ---------- */
+  async function muatKatalog() {
+    if (window.KATALOG_EMBED) return window.KATALOG_EMBED;
+    try {
+      const r = await fetch('katalog.json?t=' + Date.now(), { cache: 'no-store' });
+      if (r.ok) {
+        const k = await r.json();
+        try {
+          localStorage.setItem('pesan_katalog', JSON.stringify(k));
+        } catch (e) {}
+        return k;
+      }
+    } catch (e) {}
+    try {
+      return JSON.parse(localStorage.getItem('pesan_katalog') || 'null');
+    } catch (e) {
+      return null;
+    }
+  }
+  function gagal(K) {
+    const wa = K && K.toko && K.toko.wa;
+    root.innerHTML = `<div class="gagal"><b>Daftar barang belum tersedia.</b><br>Silakan coba lagi nanti${wa ? `, atau langsung kirim pesanan lewat WhatsApp.<br><br><a class="btn wa" href="https://wa.me/${esc(wa)}">📲 Chat WhatsApp toko</a>` : '.'}</div>`;
+  }
+
+  /* ---------- aplikasi ---------- */
+  function mulai(K) {
+    const toko = K.toko || {};
+    const TIERS = K.harga || [];
+    const P = K.p.map(p => ({ ...p, kat: (K.kat || [])[p.k] || '' }));
+    const byId = new Map(P.map(p => [p.i, p]));
+    const idx = CariProduk.indeks(P, p => ({
+      nama: p.n,
+      alias: p.a,
+      kategori: p.kat,
+      populer: p.s,
+      prioritas: p.f,
+      prioritasEkstra: p.fx
+    }));
+    const angkaDiNama = BacaDaftar.pembantuAngka(idx, p => p.n);
+    const populer = P.filter(p => p.s)
+      .sort((a, b) => b.s - a.s)
+      .slice(0, 40);
+    const DEF =
+      (TIERS.some(t => t.id === K.hd) && K.hd) ||
+      (TIERS.some(t => t.id === 'warung') && 'warung') ||
+      (TIERS[0] ? TIERS[0].id : '');
+    // harga warung tampil paling depan
+    const TIERS_TAMPIL = TIERS.slice().sort((a, b) => (b.id === DEF) - (a.id === DEF));
+    const KEY = 'pesan_v2_' + (toko.nama || '');
+    let st = { tier: '', tierPilih: false, nama: '', hp: '', cat: '', ambil: 'ambil', items: [] };
+    try {
+      const x = JSON.parse(localStorage.getItem(KEY) || 'null');
+      if (x && Array.isArray(x.items)) st = Object.assign(st, x);
+    } catch (e) {}
+    const hParam = new URLSearchParams(location.search).get('h');
+    if (hParam && TIERS.some(t => t.id === hParam)) st.tier = hParam;
+    // pilihan harga hanya diingat kalau pembeli sendiri yang menekan tombolnya
+    else if (!st.tierPilih || !TIERS.some(t => t.id === st.tier)) st.tier = DEF;
+    st.items = st.items.filter(i => !i.i || byId.has(i.i));
+    const view = { mode: 'awal', kat: 0, batas: 40, tulis: '' };
+    let cocokan = [];
+
+    const simpan = () => {
+      try {
+        localStorage.setItem(KEY, JSON.stringify(st));
+      } catch (e) {}
+    };
+    const tIdx = () =>
+      Math.max(
+        0,
+        TIERS.findIndex(t => t.id === st.tier)
+      );
+    const hargaUnit = (p, unit) => {
+      if (!TIERS.length || !p) return 0;
+      const u = p.u.find(x => x[0] === unit) || p.u[0];
+      return Number(u[1 + tIdx()]) || Number(u[1]) || 0;
+    };
+    const itemOf = (i, u) => st.items.find(x => x.i === i && x.u === u);
+    const total = () => st.items.reduce((t, x) => t + hargaUnit(byId.get(x.i), x.u) * x.q, 0);
+    const tierNama = () => (TIERS[tIdx()] || {}).nama || '';
+
+    /* ---------- kerangka ---------- */
+    root.innerHTML = `<header class="hd"><div class="wrap">
+      <div class="hd-nama">${LOGO ? `<img class="hd-logo" src="${LOGO}" alt="">` : '🛒 '}<span>${esc(toko.nama || 'Pesan Online')}</span></div>${toko.alamat ? `<div class="hd-sub">${esc(toko.alamat)}</div>` : ''}
+      <div class="hd-cara"><div><span>1</span>Tulis / pilih barang</div><div><span>2</span>Tekan tombol hijau</div><div><span>3</span>Kirim di WhatsApp</div></div>
+      ${
+        TIERS.length > 1
+          ? `<div class="seg" role="group" aria-label="Pilih harga">${TIERS_TAMPIL.map(t => `<button type="button" data-tier="${esc(t.id)}"><b>${IKON_HARGA[t.id] || '🏷️'} ${esc(t.nama)}</b><small>${KET_HARGA[t.id] ? 'harga ' + KET_HARGA[t.id] : 'harga ' + esc(t.nama.toLowerCase())}</small></button>`).join('')}</div>`
+          : ''
+      }</div></header>
+      <div class="cariwrap"><div class="wrap">
+        <div class="cari"><span class="ic">🔍</span><input id="q" type="search" placeholder="Ketik nama barang…" autocomplete="off" enterkeyhint="search"><button class="x" id="qx" type="button" hidden aria-label="Hapus pencarian">✕</button></div>
+        <div class="chips" id="chips"></div></div></div>
+      <main class="wrap list" id="list"></main>
+      <div class="bar"><button id="barBtn" type="button"><span id="barTxt"></span><b>Lanjut kirim ➜</b></button></div>
+      <section class="sheet" id="sheet" hidden></section><div id="dlg"></div><div id="toast" role="status"></div>`;
+
+    let tt;
+    function toast(m, bad) {
+      const t = $('#toast');
+      t.textContent = m;
+      t.className = 'on' + (bad ? ' bad' : '');
+      clearTimeout(tt);
+      tt = setTimeout(() => (t.className = ''), 2200);
+    }
+
+    /* ---------- jendela kecil (pengganti prompt / confirm bawaan browser) ---------- */
+    function dialog(html) {
+      const d = $('#dlg');
+      d.innerHTML = `<div class="dlg-bg"><div class="dlg" role="dialog">${html}</div></div>`;
+      document.body.classList.add('kunci');
+      const tutup = () => {
+        d.innerHTML = '';
+        document.body.classList.remove('kunci');
+      };
+      $('.dlg-bg', d).addEventListener('click', e => {
+        if (e.target.classList.contains('dlg-bg')) tutup();
+      });
+      return { el: $('.dlg', d), tutup };
+    }
+    function tanya(pesan, ya) {
+      return new Promise(res => {
+        const g = dialog(
+          `<p class="dlg-p">${pesan}</p><div class="dlg-b"><button class="btn lite" type="button" data-t>Tidak</button><button class="btn merah" type="button" data-y>${esc(ya)}</button></div>`
+        );
+        $('[data-t]', g.el).onclick = () => {
+          g.tutup();
+          res(false);
+        };
+        $('[data-y]', g.el).onclick = () => {
+          g.tutup();
+          res(true);
+        };
+      });
+    }
+    /** ubah jumlah dengan tombol besar. cb(jumlahBaru) dipanggil saat Simpan, cb(0) saat Hapus */
+    function dialogJumlah(nama, unit, nilai, cb) {
+      const g = dialog(
+        `<h3>${esc(nama)}</h3><p class="dlg-p">Jumlah${unit ? ' (' + esc(sat(unit)) + ')' : ''}:</p>
+        <div class="dlg-q"><button type="button" data-m aria-label="kurangi">−</button><input id="dq" inputmode="decimal" value="${fq(nilai)}" aria-label="jumlah"><button type="button" data-p aria-label="tambah">+</button></div>
+        <div class="dlg-b"><button class="btn lite" type="button" data-batal>Batal</button><button class="btn wa" type="button" data-ok>✔ Simpan</button></div>
+        <button class="btn hapus" type="button" data-hapus>🗑️ Hapus dari pesanan</button>`
+      );
+      const inp = $('#dq', g.el);
+      const baca = () => BacaDaftar.angka(inp.value) || 0;
+      $('[data-m]', g.el).onclick = () => (inp.value = fq(Math.max(0, baca() > 1 ? baca() - 1 : baca() / 2)));
+      $('[data-p]', g.el).onclick = () => (inp.value = fq(baca() + 1));
+      $('[data-batal]', g.el).onclick = g.tutup;
+      $('[data-ok]', g.el).onclick = () => {
+        g.tutup();
+        cb(baca());
+      };
+      $('[data-hapus]', g.el).onclick = () => {
+        g.tutup();
+        cb(0);
+      };
+      inp.addEventListener('keydown', e => e.key === 'Enter' && $('[data-ok]', g.el).click());
+    }
+
+    /* ---------- pilihan harga ---------- */
+    function drawTier() {
+      $$('[data-tier]').forEach(b => {
+        b.classList.toggle('on', b.dataset.tier === st.tier);
+        b.setAttribute('aria-pressed', b.dataset.tier === st.tier);
+      });
+    }
+    $$('[data-tier]').forEach(
+      b =>
+        (b.onclick = () => {
+          st.tier = b.dataset.tier;
+          st.tierPilih = true;
+          simpan();
+          drawTier();
+          drawList();
+          drawBar();
+          toast('Harga ' + tierNama() + ' dipakai');
+        })
+    );
+
+    /* ---------- kategori / chip ---------- */
+    function drawChips() {
+      const c = [`<button type="button" data-mode="awal">🏠 Awal</button>`];
+      (K.kat || []).forEach((k, i) => {
+        const ikon = (K.ki || [])[i];
+        if (P.some(p => p.k === i))
+          c.push(`<button type="button" data-kat="${i}">${ikon ? ikon + ' ' : ''}${esc(k)}</button>`);
+      });
+      $('#chips').innerHTML = c.join('');
+      $$('#chips button').forEach(b => {
+        b.classList.toggle(
+          'on',
+          !$('#q').value.trim() &&
+            ((b.dataset.mode && view.mode === 'awal') ||
+              (view.mode === 'kat' && b.dataset.kat !== undefined && +b.dataset.kat === view.kat))
+        );
+        b.onclick = () => bukaKategori(b.dataset.mode ? -1 : +b.dataset.kat);
+      });
+    }
+    function bukaKategori(k) {
+      $('#q').value = '';
+      $('#qx').hidden = true;
+      if (k < 0) view.mode = 'awal';
+      else {
+        view.mode = 'kat';
+        view.kat = k;
+      }
+      view.batas = 40;
+      drawChips();
+      drawList();
+      scrollTo({ top: 0 });
+    }
+
+    /* ---------- daftar barang ---------- */
+    function unitHTML(p, j) {
+      const u = p.u[j][0];
+      const it = itemOf(p.i, u);
+      const h = TIERS.length ? hargaUnit(p, u) : 0;
+      if (it)
+        return `<div class="step" data-u="${esc(u)}"><button data-dec type="button" aria-label="kurangi">−</button><button class="sq" data-set type="button"><b>${fq(it.q)} ${esc(sat(u))}</b>${h ? `<small>Rp ${rp(h * it.q)}</small>` : ''}</button><button data-inc type="button" aria-label="tambah">+</button></div>`;
+      return `<button class="add" data-add="${esc(u)}" type="button">${h ? `<span class="hrg">Rp ${rp(h)}</span>` : ''}<span class="sat">+ 1 ${esc(sat(u))}</span></button>`;
+    }
+    function produkHTML(p) {
+      return `<div class="it" data-i="${esc(p.i)}"><div class="it-nm"><b>${esc(p.n)}</b>${p.a && p.a !== p.n ? `<small>${esc(p.a)}</small>` : ''}</div><div class="it-u">${p.u.map((u, j) => unitHTML(p, j)).join('')}</div></div>`;
+    }
+    function gridKategori() {
+      const ks = (K.kat || []).map((k, i) => [k, i]).filter(([, i]) => P.some(p => p.k === i));
+      if (!ks.length) return '';
+      return `<div class="judul">📂 Cari menurut jenis barang</div><div class="katgrid">${ks.map(([k, i]) => `<button type="button" data-kat="${i}"><span>${(K.ki || [])[i] || '📦'}</span>${esc(k)}</button>`).join('')}</div>`;
+    }
+    function tulisHTML() {
+      return `<section class="tulis" aria-label="Tulis daftar belanja">
+        <h2>📝 Tulis daftar belanja</h2>
+        <p>Tulis seperti di kertas. <b>Satu baris satu barang</b>, beserta jumlahnya.</p>
+        <textarea id="tl" rows="4" placeholder="contoh:&#10;gula 2 kg&#10;indomie goreng 1 dus&#10;kopi kapal api 2 renceng">${esc(view.tulis)}</textarea>
+        <button class="btn biru" id="tlGo" type="button">🔎 Cari barangnya</button>
+        <div id="tlRes"></div></section>`;
+    }
+    function drawList() {
+      const q = $('#q').value.trim();
+      const L = $('#list');
+      let arr,
+        judul = '',
+        atas = '',
+        bawah = '';
+      if (q) {
+        arr = CariProduk.cari(idx, q, 40);
+        judul = arr.length ? `Hasil untuk “${esc(q)}”` : '';
+        bawah = `<div class="free">${arr.length ? 'Barang yang dicari tidak ada di atas?' : `Barang “${esc(q)}” belum ada di daftar.`} Tetap bisa dipesan, nanti dicarikan.<button data-free type="button">+ Pesan “${esc(q)}”</button></div>`;
+      } else if (view.mode === 'awal') {
+        atas = tulisHTML();
+        arr = populer;
+        judul = populer.length ? '⭐ Atau pilih dari barang yang sering dibeli' : '';
+        bawah = gridKategori();
+      } else {
+        arr = P.filter(p => p.k === view.kat);
+        judul = `${(K.ki || [])[view.kat] || ''} ${esc((K.kat || [])[view.kat] || '')}`;
+      }
+      const shown = q || view.mode === 'awal' ? arr : arr.slice(0, view.batas);
+      L.innerHTML =
+        atas +
+        (judul ? `<div class="judul">${judul}</div>` : '') +
+        shown.map(produkHTML).join('') +
+        (arr.length > shown.length
+          ? `<button class="more" id="more" type="button">Tampilkan lebih banyak (${arr.length - shown.length} lagi)</button>`
+          : '') +
+        (!q && view.mode === 'kat' && !arr.length
+          ? '<div class="kosong">Belum ada barang di sini.</div>'
+          : '') +
+        bawah;
+      const more = $('#more');
+      if (more)
+        more.onclick = () => {
+          view.batas += 40;
+          drawList();
+        };
+      if (atas) pasangTulis();
+    }
+    function ubahQty(i, u, delta, nama) {
+      let it = itemOf(i, u);
+      if (!it) {
+        it = { i, u, q: 0, n: nama };
+        st.items.push(it);
+      }
+      it.q = Math.round((it.q + delta) * 100) / 100;
+      if (it.q <= 0) st.items = st.items.filter(x => x !== it);
+      simpan();
+      drawBar();
+    }
+    $('#list').addEventListener('click', e => {
+      const b = e.target.closest('button');
+      if (!b) return;
+      if (b.closest('.katgrid')) return bukaKategori(+b.dataset.kat);
+      if (b.hasAttribute('data-free')) {
+        const q = $('#q').value.trim();
+        if (!q) return;
+        const ex = st.items.find(x => !x.i && x.n.toLowerCase() === q.toLowerCase());
+        if (ex) ex.q += 1;
+        else st.items.push({ i: '', u: '', q: 1, n: q });
+        simpan();
+        drawBar();
+        toast('✔ ' + q + ' masuk ke pesanan');
+        $('#q').value = '';
+        $('#qx').hidden = true;
+        drawChips();
+        drawList();
+        return;
+      }
+      const row = b.closest('[data-i]');
+      if (!row) return;
+      const p = byId.get(row.dataset.i);
+      if (!p) return;
+      const stepEl = b.closest('[data-u]');
+      const u = b.dataset.add || (stepEl && stepEl.dataset.u);
+      const gambarUlang = () =>
+        (row.querySelector('.it-u').innerHTML = p.u.map((x, j) => unitHTML(p, j)).join(''));
+      if (b.hasAttribute('data-add')) {
+        ubahQty(p.i, u, 1, p.n);
+        toast('✔ 1 ' + sat(u) + ' ' + p.n);
+      } else if (b.hasAttribute('data-inc')) ubahQty(p.i, u, 1, p.n);
+      else if (b.hasAttribute('data-dec')) ubahQty(p.i, u, -1, p.n);
+      else if (b.hasAttribute('data-set')) {
+        const it = itemOf(p.i, u);
+        return dialogJumlah(p.n, u, it ? it.q : 1, n => {
+          ubahQty(p.i, u, n - (it ? it.q : 0), p.n);
+          gambarUlang();
+        });
+      }
+      gambarUlang();
+    });
+
+    /* ---------- pencarian ---------- */
+    let ct;
+    $('#q').addEventListener('input', () => {
+      $('#qx').hidden = !$('#q').value;
+      clearTimeout(ct);
+      ct = setTimeout(() => {
+        drawChips();
+        drawList();
+      }, 150);
+    });
+    $('#q').addEventListener('keydown', e => {
+      if (e.key === 'Enter') $('#q').blur();
+    });
+    $('#qx').onclick = () => {
+      $('#q').value = '';
+      $('#qx').hidden = true;
+      drawChips();
+      drawList();
+      $('#q').focus();
+    };
+
+    /* ---------- tulis daftar sekaligus ---------- */
+    function pilihUnit(p, unit) {
+      const names = p.u.map(u => u[0]);
+      if (unit) {
+        if (names.includes(unit)) return unit;
+        for (const a of UNIT_SAMA[unit] || []) if (names.includes(a)) return a;
+      }
+      return names[0];
+    }
+    const punyaUnit = (p, unit) => p.u.some(u => u[0] === unit || (UNIT_SAMA[unit] || []).includes(u[0]));
+    function cocokkan(b) {
+      const T = b.teks.toUpperCase().replace(/\s+/g, ' ');
+      const persis = P.find(p => p.n === T || (p.a && p.a.toUpperCase() === T));
+      let r = persis
+        ? [{ item: persis, skor: 99, cocok: 99 }]
+        : CariProduk.cariSkor(idx, (b.kata ? b.kata + ' ' : '') + b.teks, 6);
+      if (b.unit && !persis)
+        r = r
+          .map(h => {
+            const uk = BacaDaftar.ukuran(h.item.n, b.qty, b.unit);
+            return { ...h, uk, skor: h.skor + (punyaUnit(h.item, b.unit) ? 4 : 0) + (uk === 2 ? 6 : uk * 3) };
+          })
+          .sort((x, y) => y.skor - x.skor);
+      // yakin hanya kalau katanya memang mirip (bukan sekadar barang laris)
+      const p = r.length && r[0].skor >= 8 && r[0].cocok >= 7 ? r[0].item : null;
+      const c = {
+        ...b,
+        hasil: r.slice(0, 4).map(h => h.item),
+        pilih: p ? p.i : '',
+        unitSel: p ? pilihUnit(p, b.unit) : '',
+        ragu: !!p && r.length > 1 && r[0].skor - r[1].skor < 3,
+        satuanHilang: ''
+      };
+      if (p && r[0].uk === 2) {
+        // "telur 1/2 kg" -> TELUR AYAM 1/2 KG sebanyak 1
+        c.qty = 1;
+        c.unitSel = p.u[0][0];
+      } else if (p && b.unit && !persis && !punyaUnit(p, b.unit)) {
+        c.satuanHilang = b.kata || sat(b.unit);
+        c.ragu = true;
+      }
+      return c;
+    }
+    function pasangTulis() {
+      $('#tl').oninput = e => (view.tulis = e.target.value);
+      $('#tlGo').onclick = () => {
+        const d = BacaDaftar.baca(view.tulis, { angkaDiNama });
+        cocokan = d.baris.map(cocokkan);
+        if (!cocokan.length) {
+          toast('Tulis dulu barangnya, satu baris satu barang', true);
+          $('#tl').focus();
+          return;
+        }
+        drawCocok();
+        $('#tlRes').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      };
+      if (cocokan.length) drawCocok();
+    }
+    function drawCocok() {
+      const box = $('#tlRes');
+      if (!box) return;
+      if (!cocokan.length) {
+        box.innerHTML = '';
+        return;
+      }
+      const ketemu = cocokan.filter(c => c.pilih).length;
+      box.innerHTML =
+        `<div class="ringkas">Ketemu <b>${ketemu}</b> dari <b>${cocokan.length}</b> barang.${ketemu < cocokan.length || cocokan.some(c => c.ragu) ? ' Cek yang berwarna <span class="t-oranye">oranye</span> atau <span class="t-merah">merah</span>.' : ''}</div>` +
+        cocokan
+          .map((c, k) => {
+            const p = byId.get(c.pilih);
+            const h = p && TIERS.length ? hargaUnit(p, c.unitSel) : 0;
+            const ditulis = [fq(c.qty), c.kata, c.teks].filter(Boolean).join(' ');
+            return `<div class="cocok ${p ? (c.ragu ? 'ragu' : 'pas') : 'tidak'}" data-k="${k}">
+            <div class="asli">Anda tulis: <b>${esc(ditulis)}</b></div>
+            <div class="pilih">${p ? (c.ragu ? '❓ ' : '✔ ') + esc(p.n) : '❔ Belum ketemu di daftar'}</div>
+            ${c.satuanHilang ? `<div class="saran">Satuan “${esc(c.satuanHilang)}” tidak ada untuk barang ini, jadi dihitung per ${esc(sat(c.unitSel))}. Ubah jumlahnya kalau perlu.</div>` : c.ragu ? '<div class="saran">Mungkin maksudnya yang lain? Ketuk yang benar di bawah.</div>' : !p ? `<div class="saran">${c.hasil.length ? 'Ketuk barang yang benar di bawah, atau biarkan dipesan apa adanya (nanti dicarikan toko).' : 'Tetap dipesan apa adanya, nanti dicarikan toko.'}</div>` : ''}
+            <div class="cq"><div class="step kecil"><button type="button" data-cm aria-label="kurangi">−</button><button type="button" class="sq" data-cs><b>${fq(c.qty)}${p ? ' ' + esc(sat(c.unitSel)) : c.unit ? ' ' + esc(sat(c.unit)) : ''}</b></button><button type="button" data-cp aria-label="tambah">+</button></div>${h ? `<span class="cq-h">Rp ${rp(h * c.qty)}</span>` : ''}</div>
+            ${p && p.u.length > 1 ? `<div class="units">${p.u.map(u => `<button type="button" data-cu="${esc(u[0])}" class="${u[0] === c.unitSel ? 'on' : ''}">${esc(sat(u[0]))}${TIERS.length ? ` · Rp ${rp(hargaUnit(p, u[0]))}` : ''}</button>`).join('')}</div>` : ''}
+            ${p && !c.ragu && !c.buka && c.hasil.length > 1 ? '<button type="button" class="ganti" data-buka>🔄 Bukan ini? Ganti barang</button>' : ''}
+            ${c.hasil.length && (c.ragu || !p || c.buka) ? `<div class="alt">${c.hasil.map(x => `<button type="button" data-alt="${esc(x.i)}" class="${x.i === c.pilih ? 'on' : ''}">${esc(x.n)}</button>`).join('')}<button type="button" data-alt="" class="${c.pilih ? '' : 'on'}">✍️ apa adanya</button></div>` : ''}
+            <button type="button" class="buang" data-buang>🗑️ Hapus baris ini</button></div>`;
+          })
+          .join('') +
+        `<button class="btn wa" id="tlAdd" type="button">➕ Masukkan ${cocokan.length} barang ke pesanan</button>`;
+      $$('[data-k]', box).forEach(row => {
+        const k = +row.dataset.k;
+        const c = cocokan[k];
+        $$('[data-alt]', row).forEach(
+          b =>
+            (b.onclick = () => {
+              c.pilih = b.dataset.alt;
+              c.ragu = false;
+              const p = byId.get(c.pilih);
+              c.unitSel = p ? pilihUnit(p, c.unit) : '';
+              drawCocok();
+            })
+        );
+        $('[data-buka]', row) &&
+          ($('[data-buka]', row).onclick = () => {
+            c.buka = true;
+            drawCocok();
+          });
+        $$('[data-cu]', row).forEach(
+          b =>
+            (b.onclick = () => {
+              c.unitSel = b.dataset.cu;
+              drawCocok();
+            })
+        );
+        $('[data-cm]', row).onclick = () => {
+          c.qty = c.qty > 1 ? Math.round((c.qty - 1) * 100) / 100 : c.qty;
+          drawCocok();
+        };
+        $('[data-cp]', row).onclick = () => {
+          c.qty = Math.round((c.qty + 1) * 100) / 100;
+          drawCocok();
+        };
+        $('[data-cs]', row).onclick = () => {
+          const p = byId.get(c.pilih);
+          dialogJumlah(p ? p.n : c.teks, p ? c.unitSel : c.unit, c.qty, n => {
+            if (n > 0) c.qty = n;
+            else cocokan.splice(k, 1);
+            drawCocok();
+          });
+        };
+        $('[data-buang]', row).onclick = () => {
+          cocokan.splice(k, 1);
+          drawCocok();
+        };
+      });
+      $('#tlAdd').onclick = () => {
+        let n = 0;
+        for (const c of cocokan) {
+          const p = byId.get(c.pilih);
+          if (p) ubahQty(p.i, c.unitSel, c.qty, p.n);
+          else {
+            st.items.push({ i: '', u: c.unit || '', q: c.qty, n: c.teks });
+            simpan();
+          }
+          n++;
+        }
+        cocokan = [];
+        view.tulis = '';
+        drawBar();
+        toast(`✔ ${n} barang masuk ke pesanan`);
+        bukaSheet();
+      };
+    }
+
+    /* ---------- bar bawah ---------- */
+    function drawBar() {
+      const n = st.items.length;
+      const t = total();
+      $('#barBtn').disabled = !n;
+      $('#barTxt').innerHTML = n
+        ? `🛒 ${n} barang${TIERS.length && t ? `<small>± Rp ${rp(t)} · harga ${esc(tierNama())}</small>` : ''}`
+        : 'Belum ada barang dipilih';
+    }
+    $('#barBtn').onclick = () => bukaSheet();
+
+    /* ---------- lembar pesanan & kirim ---------- */
+    function b64url(s) {
+      const bytes = new TextEncoder().encode(s);
+      let bin = '';
+      bytes.forEach(b => (bin += String.fromCharCode(b)));
+      return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    }
+    /** data pesanan ringkas untuk link kasir: nama barang tidak ikut (kasir mencocokkan lewat kode barang) */
+    function payload() {
+      return b64url(
+        JSON.stringify([
+          2,
+          st.nama,
+          st.hp,
+          st.cat,
+          st.ambil === 'antar' ? 1 : 0,
+          st.tier,
+          st.items.map(x => (x.i ? [x.i, x.u, x.q] : ['', x.u || '', x.q, x.n]))
+        ])
+      );
+    }
+    function linkKasir() {
+      const base = K.kasir || (location.protocol.startsWith('http') ? new URL('./', location.href).href : '');
+      return base ? base.replace(/(index\.html)?$/, '') + '#pesan=' + payload() : '';
+    }
+    /** Pesan WhatsApp: rapi, satu barang satu baris, tanpa tanda bintang / garis / nomor urut */
+    function teksWA() {
+      const L = ['PESANAN ' + String(toko.nama || '').toUpperCase(), 'Nama: ' + st.nama];
+      if (st.hp) L.push('No. HP: ' + st.hp);
+      if (TIERS.length > 1) L.push('Harga: ' + tierNama());
+      L.push(st.ambil === 'antar' ? 'Diantar' : 'Diambil ke toko');
+      if (st.cat) L.push('Catatan: ' + st.cat.replace(/\s*\n\s*/g, ', '));
+      L.push('');
+      st.items.forEach(x =>
+        L.push(`${fq(x.q)}${x.u ? ' ' + sat(x.u) : ''} - ${x.n}${x.i ? '' : ' (belum ada di daftar)'}`)
+      );
+      if (TIERS.length && total()) L.push('', 'Perkiraan total: Rp ' + rp(total()));
+      const lk = linkKasir();
+      if (lk) L.push('', 'Buka di kasir:', lk);
+      return L.join('\n');
+    }
+    function bukaSheet() {
+      const sh = $('#sheet');
+      if (sh.hidden) {
+        sh.hidden = false;
+        document.body.classList.add('kunci');
+        history.pushState({ sheet: 1 }, '');
+      }
+      drawSheet();
+      sh.scrollTop = 0;
+    }
+    function tutupSheet(viaBack) {
+      const sh = $('#sheet');
+      if (sh.hidden) return;
+      sh.hidden = true;
+      document.body.classList.remove('kunci');
+      if (!viaBack && history.state && history.state.sheet) history.back();
+      drawList();
+      drawBar();
+    }
+    addEventListener('popstate', () => tutupSheet(true));
+    function drawSheet(terkirim) {
+      const t = total();
+      const teks = st.items.length && st.nama ? teksWA() : '';
+      $('#sheet').innerHTML =
+        `<div class="sh-hd"><button id="shBack" type="button">← Kembali</button><b>Pesanan Anda</b></div><div class="wrap">
+       <div class="card"><h2>🛒 Barang yang dipesan (${st.items.length})</h2>${
+         st.items
+           .map(x => {
+             const h = x.i && TIERS.length ? hargaUnit(byId.get(x.i), x.u) : 0;
+             return `<div class="li" data-li="${st.items.indexOf(x)}"><div class="nm"><b>${esc(x.n)}</b><small>${x.i ? '' : 'belum ada di daftar, nanti dicarikan · '}${h ? `Rp ${rp(h)} / ${esc(sat(x.u))}` : esc(sat(x.u))}</small></div>
+             <div class="step"><button data-dec type="button" aria-label="kurangi">−</button><button class="sq" data-set type="button"><b>${fq(x.q)}</b><small>${esc(sat(x.u))}</small></button><button data-inc type="button" aria-label="tambah">+</button></div></div>`;
+           })
+           .join('') || '<div class="kosong">Belum ada barang.</div>'
+       }
+       ${TIERS.length && t ? `<div class="tot"><span>Perkiraan total<small>harga ${esc(tierNama())}, total akhir dihitung toko</small></span><b>Rp ${rp(t)}</b></div>` : ''}
+       <button class="btn lite" id="shAdd" type="button">➕ Tambah barang lain</button></div>
+       <div class="card"><h2>👤 Data pemesan</h2>
+        <label for="fNama">Nama Anda / nama warung <span class="wajib">(wajib)</span></label><input id="fNama" value="${esc(st.nama)}" placeholder="contoh: Toko Emih" autocomplete="name">
+        <label for="fHp">No. HP (boleh kosong)</label><input id="fHp" value="${esc(st.hp)}" inputmode="tel" autocomplete="tel">
+        <label>Barangnya mau</label><div class="seg2"><button type="button" data-ambil="ambil" class="${st.ambil !== 'antar' ? 'on' : ''}">🏪 Diambil ke toko</button><button type="button" data-ambil="antar" class="${st.ambil === 'antar' ? 'on' : ''}">🛵 Diantar</button></div>
+        <label for="fCat">Catatan (alamat antar, jam ambil, dll)</label><textarea id="fCat" rows="2">${esc(st.cat)}</textarea></div>
+       <div class="card ${terkirim ? 'done' : ''}" id="kirimBox">${
+         terkirim
+           ? `<h2>✔ WhatsApp sudah dibuka</h2><p class="besar">Sudah menekan tombol <b>Kirim ➤</b> di WhatsApp?</p>
+              <button class="btn wa" id="kSudah" type="button">✔ Sudah terkirim</button><button class="btn" id="kWa2" type="button">📲 Buka WhatsApp lagi</button><button class="btn lite" id="kCopy" type="button">📋 Salin pesan (kirim manual)</button>`
+           : `${toko.wa ? '<button class="btn wa besar" id="kWa" type="button">📲 Kirim pesanan lewat WhatsApp</button><p class="note">WhatsApp terbuka dengan pesan yang sudah jadi. Tinggal tekan tombol <b>Kirim ➤</b>.</p>' : ''}
+              ${teks ? `<details class="intip"><summary>👁️ Lihat isi pesan</summary><pre>${esc(teks)}</pre></details>` : ''}
+              <div class="kecil2"><button class="btn lite" id="kCopy" type="button">📋 Salin pesan</button><button class="btn lite" id="kQr" type="button">🔳 QR untuk kasir</button><button class="btn lite" id="kClr" type="button">🗑️ Kosongkan</button></div><div class="qrbox" id="qrBox"></div>`
+       }</div><p class="foot">Daftar pesanan tersimpan di HP ini sampai dikirim.</p></div>`;
+      $('#shBack').onclick = () => tutupSheet();
+      $('#shAdd').onclick = () => tutupSheet();
+      $$('[data-li]').forEach(row => {
+        const x = st.items[+row.dataset.li];
+        row.onclick = e => {
+          const b = e.target.closest('button');
+          if (!b) return;
+          const selesai = () => {
+            if (x.q <= 0) st.items = st.items.filter(y => y !== x);
+            simpan();
+            drawSheet();
+            drawBar();
+          };
+          if (b.hasAttribute('data-inc')) x.q = Math.round((x.q + 1) * 100) / 100;
+          else if (b.hasAttribute('data-dec')) x.q = Math.round((x.q - 1) * 100) / 100;
+          else if (b.hasAttribute('data-set'))
+            return dialogJumlah(x.n, x.u, x.q, n => {
+              x.q = n;
+              selesai();
+            });
+          selesai();
+        };
+      });
+      const baca = () => {
+        st.nama = $('#fNama').value.trim();
+        st.hp = $('#fHp').value.trim();
+        st.cat = $('#fCat').value.trim();
+        simpan();
+      };
+      ['#fNama', '#fHp', '#fCat'].forEach(s => $(s).addEventListener('input', baca));
+      ['#fNama', '#fHp', '#fCat'].forEach(s =>
+        $(s).addEventListener('change', () => {
+          const d = $('.intip pre');
+          if (d && st.items.length && st.nama) d.textContent = teksWA();
+        })
+      );
+      $$('[data-ambil]').forEach(
+        b =>
+          (b.onclick = () => {
+            st.ambil = b.dataset.ambil;
+            simpan();
+            $$('[data-ambil]').forEach(x => x.classList.toggle('on', x === b));
+            const d = $('.intip pre');
+            if (d && st.items.length && st.nama) d.textContent = teksWA();
+          })
+      );
+      const siap = () => {
+        baca();
+        if (!st.items.length) {
+          toast('Daftar pesanan masih kosong', true);
+          return false;
+        }
+        if (!st.nama) {
+          toast('Isi nama dulu', true);
+          $('#fNama').focus();
+          $('#fNama').scrollIntoView({ behavior: 'smooth', block: 'center' });
+          return false;
+        }
+        return true;
+      };
+      const salin = async () => {
+        if (!siap()) return;
+        try {
+          await navigator.clipboard.writeText(teksWA());
+          toast('Pesan disalin ✔ Tempel di WhatsApp');
+        } catch (e) {
+          const g = dialog(
+            `<h3>Salin pesan ini</h3><textarea class="salin" rows="10" readonly>${esc(teksWA())}</textarea><div class="dlg-b"><button class="btn lite" type="button" data-batal>Tutup</button></div>`
+          );
+          $('textarea', g.el).select();
+          $('[data-batal]', g.el).onclick = g.tutup;
+        }
+      };
+      const kirimWA = () => {
+        if (!siap()) return;
+        const url = 'https://wa.me/' + toko.wa + '?text=' + encodeURIComponent(teksWA());
+        const w = window.open(url, '_blank');
+        if (!w) location.href = url;
+        drawSheet(true);
+      };
+      $('#kCopy') && ($('#kCopy').onclick = salin);
+      $('#kWa') && ($('#kWa').onclick = kirimWA);
+      $('#kWa2') && ($('#kWa2').onclick = kirimWA);
+      $('#kQr') &&
+        ($('#kQr').onclick = () => {
+          if (!siap()) return;
+          const box = $('#qrBox');
+          try {
+            const qr = qrcode(0, 'L');
+            qr.addData(linkKasir() || teksWA());
+            qr.make();
+            box.innerHTML = `<p class="note">Kalau sedang di toko, tunjukkan layar ini ke kasir untuk discan:</p><img alt="QR pesanan" src="${qr.createDataURL(4, 4)}">`;
+            box.scrollIntoView({ behavior: 'smooth' });
+          } catch (e) {
+            box.innerHTML =
+              '<p class="note">Pesanan terlalu panjang untuk QR. Kirim lewat WhatsApp saja.</p>';
+          }
+        });
+      $('#kClr') &&
+        ($('#kClr').onclick = async () => {
+          if (st.items.length && !(await tanya('Kosongkan semua barang di daftar pesanan?', 'Ya, kosongkan')))
+            return;
+          st.items = [];
+          simpan();
+          drawSheet();
+          drawBar();
+        });
+      $('#kSudah') &&
+        ($('#kSudah').onclick = () => {
+          st.items = [];
+          st.cat = '';
+          simpan();
+          tutupSheet();
+          toast('Terima kasih, pesanan diproses 🙏');
+        });
+    }
+
+    drawTier();
+    drawChips();
+    drawList();
+    drawBar();
+  }
+
+  muatKatalog().then(K => (K && Array.isArray(K.p) && K.p.length ? mulai(K) : gagal(K)));
+})();
+
+</script>
+</body>
+</html>
